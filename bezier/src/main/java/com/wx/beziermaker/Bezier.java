@@ -37,7 +37,8 @@ import java.util.ArrayList;
 public class Bezier extends View {
 
     public static final int COUNT = 9;  // 贝塞尔曲线阶数
-    public static final int RECT_RADIUS = 30;   // 矩形半径
+    public static final int REGION_WIDTH = 30;  // 合法区域宽度
+    public static final int FINGER_RECT_SIZE = 60;   // 矩形尺寸
     public static final int BEZIER_WIDTH = 10;   // 贝塞尔曲线线宽
     public static final int TANGENT_WIDTH = 10;  // 切线线宽
     public static final int CONTROL_WIDTH = 12;    // 控制点连线线宽
@@ -55,10 +56,6 @@ public class Bezier extends View {
     private ArrayList<PointF> mBezierPoints = null; // 贝塞尔曲线点集
     private PointF mBezierPoint = null; // 贝塞尔曲线移动点
 
-    private PointF mPoint1, mPoint2;
-
-//    private PointF p1, p2, p3;  // 控制点
-    private PointF pStart, pEnd, p1, p2, p3, p4, p5, p6, p7, p8;
     private ArrayList<PointF> mControlPoints;    // 控制点集
 
     private ArrayList<PointF> mPoints1 = new ArrayList<>();
@@ -68,24 +65,31 @@ public class Bezier extends View {
 
     private int mCurOrder = 2;  // 当前阶数
 
-    private boolean mRun = false;   // 运行状态
+    private boolean mRun = true;   // 运行状态
 
     private boolean mTouch = true; // 控制状态
+
+    private int mWidth = 0, mHeight = 0;    // 画布宽高
+
+    private PointF mCurPoint; // 当前移动的控制点
 
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             if (msg.what == 100) {
-                i += 3;
-                if (i >= mBezierPoints.size() || i >= mPoints1.size() || i >= mPoints2.size()) {
+                i += 10;
+//                log("message:" + i + ", size:" + mBezierPoints.size());
+                if (i >= mBezierPoints.size()/* || i >= mPoints1.size() || i >= mPoints2.size()*/) {
                     removeMessages(100);
+                    i = 0;
                     mRun = false;
                     mTouch = true;
                     return;
                 }
                 mBezierPoint = new PointF(mBezierPoints.get(i).x, mBezierPoints.get(i).y);
-                mPoint1 = new PointF(mPoints1.get(i).x, mPoints1.get(i).y);
-                mPoint2 = new PointF(mPoints2.get(i).x, mPoints2.get(i).y);
+//                log("message point:" + mBezierPoint);
+//                mP1 = new PointF(mPoints1.get(i).x, mPoints1.get(i).y);
+//                mP2 = new PointF(mPoints2.get(i).x, mPoints2.get(i).y);
                 invalidate();
             }
         }
@@ -109,13 +113,9 @@ public class Bezier extends View {
     private void init() {
         // 初始坐标
         mControlPoints = new ArrayList<>(COUNT + 1);
-        log(mControlPoints.size() + "");
-        p1 = new PointF(100, 100);
-        p2 = new PointF(200, 300);
-        p3 = new PointF(500, 200);
-        mControlPoints.add(p1);
-        mControlPoints.add(p2);
-        mControlPoints.add(p3);
+        mControlPoints.add(new PointF(100, 100));
+        mControlPoints.add(new PointF(500, 200));
+        mControlPoints.add(new PointF(200, 300));
 
         // 贝塞尔曲线画笔
         mBezierPaint = new Paint();
@@ -155,76 +155,182 @@ public class Bezier extends View {
         mTextPaint.setColor(Color.BLACK);
         mTextPaint.setAntiAlias(true);
 
-        mPoint1 = p1;
-        mPoint2 = p2;
-
-        mBezierPoints = createQuad(p1, p2, p3);
-
         mBezierPath = new Path();
     }
 
-    private ArrayList<PointF> createQuad(PointF start, PointF con, PointF end) {
+    private ArrayList<PointF> createBezierPoints(ArrayList<PointF> controlPoints) {
         ArrayList<PointF> points = new ArrayList<>();
+        int sum = controlPoints.size();
         float x, y;
         for (float t = 0; t <= 1; t += 0.001f) {
-            x = (1 - t) * (1 - t) * start.x + 2 * t * (1 - t) * con.x + t * t * end.x;
-            y = (1 - t) * (1 - t) * start.y + 2 * t * (1 - t) * con.y + t * t * end.y;
+            x = createBezier(controlPoints.get(0).x, controlPoints.get(1).x, t, sum - 1);
+            y = createBezier(controlPoints.get(0).y, controlPoints.get(1).y, t, sum - 1);
+            log("x:" + x + ", y:" + y);
+//            x = (1 - t) * (1 - t) * start.x + 2 * t * (1 - t) * con.x + t * t * end.x;
+//            y = (1 - t) * (1 - t) * start.y + 2 * t * (1 - t) * con.y + t * t * end.y;
             points.add(new PointF(x, y));
-        }
-        for (float i = 0; i <= 1; i += 0.001f) {
-            float xx = start.x + (con.x - start.x) * i;
-            float yy = start.y + (con.y - start.y) * i;
-            float xxx = con.x + (end.x - con.x) * i;
-            float yyy = con.y + (end.y - con.y) * i;
-            mPoints1.add(new PointF(xx, yy));
-            mPoints2.add(new PointF(xxx, yyy));
         }
         return points;
     }
 
+    private float createBezier(float p0, float p1, float t, int num) {
+        float bt = (1 - t) * p0 + t * p1;
+        if (num == 1) {
+            return bt;
+        } else {
+            return (1 - t) * createBezier(mControlPoints.get(num - 2).x, mControlPoints.get(num - 1).x, t, num - 1) +
+                    t * createBezier
+                            (mControlPoints.get(num - 1).x, mControlPoints.get(num).x, t, num - 1);
+        }
+    }
+
+//    private ArrayList<PointF> createQuad(PointF start, PointF con, PointF end) {
+//        ArrayList<PointF> points = new ArrayList<>();
+//        float x, y;
+//        for (float t = 0; t <= 1; t += 0.001f) {
+//            x = (1 - t) * (1 - t) * start.x + 2 * t * (1 - t) * con.x + t * t * end.x;
+//            y = (1 - t) * (1 - t) * start.y + 2 * t * (1 - t) * con.y + t * t * end.y;
+//            points.add(new PointF(x, y));
+//        }
+//        for (float i = 0; i <= 1; i += 0.001f) {
+//            float xx = start.x + (con.x - start.x) * i;
+//            float yy = start.y + (con.y - start.y) * i;
+//            float xxx = con.x + (end.x - con.x) * i;
+//            float yyy = con.y + (end.y - con.y) * i;
+//            mPoints1.add(new PointF(xx, yy));
+//            mPoints2.add(new PointF(xxx, yyy));
+//        }
+//        return points;
+//    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        if (mWidth == 0 || mHeight == 0) {
+            mWidth = getWidth();
+            mHeight = getHeight();
+        }
+    }
+
+    /**
+     * 判断坐标是否在合法区域中
+     *
+     * @param x
+     * @param y
+     * @return
+     */
+    private boolean isLegalTouchRegion(float x, float y) {
+        if (x <= REGION_WIDTH || x >= mWidth - REGION_WIDTH || y <= REGION_WIDTH || y >= mHeight - REGION_WIDTH) {
+            return false;
+        }
+        RectF rectF = new RectF();
+        for (PointF point : mControlPoints) {
+            if (mCurPoint != null && mCurPoint.equals(point)) { // 判断是否是当前控制点
+                continue;
+            }
+            rectF.set(point.x - REGION_WIDTH, point.y - REGION_WIDTH, point.x + REGION_WIDTH, point.y + REGION_WIDTH);
+            if (rectF.contains(x, y)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * 获取合法控制点
+     *
+     * @param x
+     * @param y
+     * @return
+     */
+    private PointF getLegalControlPoint(float x, float y) {
+        RectF rectF = new RectF();
+        for (PointF point : mControlPoints) {
+            rectF.set(point.x - REGION_WIDTH, point.y - REGION_WIDTH, point.x + REGION_WIDTH, point.y + REGION_WIDTH);
+            if (rectF.contains(x, y)) {
+                return point;
+            }
+        }
+        return null;
+    }
+
+
+    /**
+     * 判断手指坐标是否在合法区域中
+     *
+     * @param x
+     * @param y
+     * @return
+     */
+    private boolean isLegalFingerRegion(float x, float y) {
+        if (mCurPoint != null) {
+            RectF rectF = new RectF(mCurPoint.x - FINGER_RECT_SIZE / 2, mCurPoint.y - FINGER_RECT_SIZE / 2, mCurPoint
+                    .x +
+                    FINGER_RECT_SIZE / 2, mCurPoint.y +
+                    FINGER_RECT_SIZE / 2);
+            if (rectF.contains(x, y)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     protected void onDraw(Canvas canvas) {
+        log("onDraw:" + mRun + ", " + mTouch + ", point:" + mBezierPoint);
         if (mRun && !mTouch) {
             if (mBezierPoint == null) {
+                mBezierPath.reset();
                 mBezierPoint = mBezierPoints.get(0);
+                log("path reset:" + mBezierPoint);
                 mBezierPath.moveTo(mBezierPoint.x, mBezierPoint.y);
             }
-            // 固定点连线
-            canvas.drawLine(p1.x, p1.y, p2.x, p2.y, mLinePaint);
-            canvas.drawLine(p2.x, p2.y, p3.x, p3.y, mLinePaint);
+            // 控制点和控制点连线
+            int size = mControlPoints.size();
+            PointF point;
+            for (int i = 0; i < size; i++) {
+                point = mControlPoints.get(i);
+                if (i > 0) {
+                    canvas.drawLine(mControlPoints.get(i - 1).x, mControlPoints.get(i - 1).y, point.x, point.y,
+                            mLinePaint);
+                }
+                canvas.drawCircle(point.x, point.y, CONTROL_RADIUS, mControlPaint);
+            }
 
-            // 固定点
-            canvas.drawCircle(p1.x, p1.y, CONTROL_RADIUS, mControlPaint);
-            canvas.drawCircle(p2.x, p2.y, CONTROL_RADIUS, mControlPaint);
-            canvas.drawCircle(p3.x, p3.y, CONTROL_RADIUS, mControlPaint);
-
-            // 连线
-            canvas.drawLine(mPoint1.x, mPoint1.y, mPoint2.x, mPoint2.y, mTangentPaint);
+            // 切线
+//            canvas.drawLine(mP1.x, mP1.y, mP2.x, mP2.y, mTangentPaint);
 
             // Bezier曲线
-            mBezierPath.lineTo(mBezierPoint.x, mBezierPoint.y);
-            canvas.drawPath(mBezierPath, mBezierPaint);
+            log("draw:" + mBezierPoint);
+            for (int i = 0; i < mBezierPoints.size(); i++) {
+                mBezierPath.lineTo(mBezierPoints.get(i).x, mBezierPoints.get(i).y);
+                canvas.drawPath(mBezierPath, mBezierPaint);
+            }
+//            mBezierPath.lineTo(mBezierPoint.x, mBezierPoint.y);
+//            canvas.drawPath(mBezierPath, mBezierPaint);
             // Bezier曲线起始移动点
-            canvas.drawCircle(mBezierPoint.x, mBezierPoint.y, CONTROL_RADIUS, mMovingPaint);
+//            canvas.drawCircle(mBezierPoint.x, mBezierPoint.y, CONTROL_RADIUS, mMovingPaint);
 
-            mHandler.removeMessages(100);
-            mHandler.sendEmptyMessage(100);
+//            mHandler.removeMessages(100);
+//            mHandler.sendEmptyMessage(100);
         }
         if (mTouch) {
-            // 固定点连线
-            canvas.drawLine(p1.x, p1.y, p2.x, p2.y, mLinePaint);
-            canvas.drawLine(p2.x, p2.y, p3.x, p3.y, mLinePaint);
-
-            // 固定点
-            canvas.drawCircle(p1.x, p1.y, CONTROL_RADIUS, mControlPaint);
-            canvas.drawCircle(p2.x, p2.y, CONTROL_RADIUS, mControlPaint);
-            canvas.drawCircle(p3.x, p3.y, CONTROL_RADIUS, mControlPaint);
+            // 控制点和控制点连线
+            int size = mControlPoints.size();
+            PointF point;
+            for (int i = 0; i < size; i++) {
+                point = mControlPoints.get(i);
+                if (i > 0) {
+                    canvas.drawLine(mControlPoints.get(i - 1).x, mControlPoints.get(i - 1).y, point.x, point.y,
+                            mLinePaint);
+                }
+                canvas.drawCircle(point.x, point.y, CONTROL_RADIUS, mControlPaint);
+            }
         }
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        log("touch:" + mTouch);
         if (!mTouch) {
             return true;
         }
@@ -237,15 +343,20 @@ public class Bezier extends View {
                 log("move");
                 float x = event.getX();
                 float y = event.getY();
-                RectF rectF = new RectF(p1.x - RECT_RADIUS, p1.y - RECT_RADIUS, p1.x + RECT_RADIUS, p1.y + RECT_RADIUS);
-                if (rectF.contains(x, y)) {
-                    p1.x = x;
-                    p1.y = y;
-                    invalidate();
+                if (mCurPoint == null) {
+                    mCurPoint = getLegalControlPoint(x, y);
+                }
+                if (mCurPoint != null && isLegalTouchRegion(x, y)) {  // 判断手指移动区域是否合法
+                    if (isLegalFingerRegion(x, y)) {    // 判断手指触摸区域是否合法
+                        mCurPoint.x = x;
+                        mCurPoint.y = y;
+                        invalidate();
+                    }
                 }
                 break;
             case MotionEvent.ACTION_UP:
                 log("up");
+                mCurPoint = null;
                 mRun = true;
                 break;
         }
@@ -254,6 +365,10 @@ public class Bezier extends View {
 
     public void start() {
         if (mRun) {
+            mBezierPoint = null;
+            mBezierPoints = createBezierPoints(mControlPoints);
+//            mBezierPoints = createQuad(mControlPoints.get(0), mControlPoints.get(1), mControlPoints.get(2));
+            log("run:" + mControlPoints.size() + ", " + mBezierPoints.size());
             mRun = true;
             mTouch = false;
             invalidate();
