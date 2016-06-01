@@ -114,9 +114,9 @@ public class Bezier extends View {
         // 初始坐标
         mControlPoints = new ArrayList<>(COUNT + 1);
         mControlPoints.add(new PointF(100, 100));
-        mControlPoints.add(new PointF(500, 200));
-        mControlPoints.add(new PointF(300, 200));
         mControlPoints.add(new PointF(200, 300));
+        mControlPoints.add(new PointF(500, 200));
+//        mControlPoints.add(new PointF(300, 200));
 
         // 贝塞尔曲线画笔
         mBezierPaint = new Paint();
@@ -164,47 +164,86 @@ public class Bezier extends View {
         int sum = controlPoints.size();
         float x, y;
         for (float t = 0; t <= 1; t += 0.001f) {
-            x = createBezierX(controlPoints.get(0).x, controlPoints.get(1).x, t, sum - 1);
-            y = createBezierY(controlPoints.get(0).y, controlPoints.get(1).y, t, sum - 1);
+//            PointF pointF = createBezier(controlPoints, t);
+            PointF pointF = deCasteljau(controlPoints, t);
+            log("create:" + pointF);
+            points.add(pointF);
+//            createBezier(controlPoints, t);
+//            x = createBezierX(controlPoints.get(0).x, controlPoints.get(1).x, t, sum - 1);
+//            y = createBezierY(controlPoints.get(0).y, controlPoints.get(1).y, t, sum - 1);
 //            log("x:" + x + ", y:" + y);
 //            x = (1 - t) * (1 - t) * start.x + 2 * t * (1 - t) * con.x + t * t * end.x;
 //            y = (1 - t) * (1 - t) * start.y + 2 * t * (1 - t) * con.y + t * t * end.y;
-            points.add(new PointF(x, y));
+//            points.add(new PointF(x, y));
         }
         return points;
     }
 
-//    private float createBezierX(float p0, float p1, float t, int sum, int order) {
-//        if (order != 0) {
-//            log("p0:" + p0 + ", p1:" + p1 + ", order:" + order);
-//        }
-//        float bt = (1 - t) * p0 + t * p1;
-//        if (sum == (order + 1)) {
-//            return bt;
-//        } else {
-//            return (1 - t) * createBezierX(mControlPoints.get(order).x, mControlPoints.get(order + 1).x, t, sum,
-//                    order + 1)/* +
-//                    t * createBezierX
-//                            (mControlPoints.get(order + 1).x, mControlPoints.get(order + 2).x, t, sum, order + 1)*/;
-//        }
-//    }
+    private float bezier(float p0, float p1, float t) {
+        return (1 - t) * p0 + t * p1;
+    }
 
-//    private float createBezierY(float p0, float p1, float t, int sum, int order) {
-//        float bt = (1 - t) * p0 + t * p1;
-//        if (sum == order + 1) {
-//            return bt;
-//        } else {
-//            return (1 - t) * createBezierY(mControlPoints.get(order).y, mControlPoints.get(order + 1).y, t, sum,
-//                    order + 1) +
-//                    t * createBezierY
-//                            (mControlPoints.get(order + 1).y, mControlPoints.get(order + 2).y, t, sum, order + 1);
+    public static PointF deCasteljau(ArrayList<PointF> controlPoints, float t) {
+        final int n = controlPoints.size();
+        PointF[] points = new PointF[n];
+        for (int i = 0; i < n; i++) {
+            points[i] = controlPoints.get(i);
+        }
+        for (int i = 1; i <= n; i++)
+            for (int j = 0; j < n - i; j++) {
+                points[j].x = (1 - t) * points[j].x + t * points[j + 1].x;
+                points[j].y = (1 - t) * points[j].y + t * points[j + 1].y;
+            }
+
+        return points[0];
+    }
+
+    private PointF createBezier(ArrayList<PointF> controlPoints, float t) {
+        int size = controlPoints.size();
+        PointF[] temps = new PointF[size];
+        for (int i = 0; i < size; i++) {
+            temps[i] = controlPoints.get(i);
+        }
+//        for (PointF pointF : temps) {
+//            log("create:" + pointF);
 //        }
-//    }
+        float temp = temps[0].x;
+        float tempp = temps[0].x;
+        float temp1 = temps[0].x;
+        float temp2 = temps[0].x;
+        float temp3 = temps[0].x;
+        float temp4 = temps[0].x;
+
+        for (int i = 1; i <= size; i++) {
+            for (int j = 0; j < size - i; j++) {
+                temp1 = temp2 * (1 - t) + temps[j + 1].x * t;
+                temp2 = temp1;
+                temp3 = temp4 * (1 - t) + temps[j + 1].y * t;
+                temp4 = temp3;
+            }
+        }
+
+//        for (unsigned int i = 1; i <= tempPoints.size(); i++){
+//            for (unsigned int j = 0; j < tempPoints.size()-i; j++)
+//            tempPoints[j] = tempPoints[j] * (1-t) + tempPoints[j+1] * t;
+//        }
+//        return tempPoints[0];
+//        for (int j = 0; j < size - 1; j++) {
+////            temp1 = bezier(temps[j].x, temps[j + 1].x, t);
+//            temp1 = temp2 * (1 - t) + temps[j + 1].x * t;
+//            temp2 = temp1;
+//            temp3 = temp4 * (1 - t) + temps[j + 1].y * t;
+//            temp4 = temp3;
+////                temps[j].x = temps[j].x * (i - t) + temps[j + 1].x * t;
+////                temps[j].y = temps[j].y * (i - t) + temps[j + 1].y * t;
+//        }
+        return new PointF(temp2, temp4);
+    }
 
     private float createBezierX(float p0, float p1, float t, int num) {
         float bt = (1 - t) * p0 + t * p1;
         if (num != 3) {
-            log("p0:" + p0 + ", p1:" + p1 + ", num:" + num);
+//            log("p0:" + p0 + ", p1:" + p1 + ", num:" + num);
         }
         if (num == 1) {
             return bt;
@@ -226,19 +265,15 @@ public class Bezier extends View {
         }
     }
 
-    private float bezier(float p0, float p1, float t) {
-        return (1 - t) * p0 + t * p1;
-    }
-
-//    private ArrayList<PointF> createQuad(PointF start, PointF con, PointF end) {
-//        ArrayList<PointF> points = new ArrayList<>();
-//        float x, y;
-//        for (float t = 0; t <= 1; t += 0.001f) {
-//            x = (1 - t) * (1 - t) * start.x + 2 * t * (1 - t) * con.x + t * t * end.x;
-//            y = (1 - t) * (1 - t) * start.y + 2 * t * (1 - t) * con.y + t * t * end.y;
-//            log("quad x:" + x + ", y:" + y);
-//            points.add(new PointF(x, y));
-//        }
+    private ArrayList<PointF> createQuad(PointF start, PointF con, PointF end) {
+        ArrayList<PointF> points = new ArrayList<>();
+        float x, y;
+        for (float t = 0; t <= 1; t += 0.001f) {
+            x = (1 - t) * (1 - t) * start.x + 2 * t * (1 - t) * con.x + t * t * end.x;
+            y = (1 - t) * (1 - t) * start.y + 2 * t * (1 - t) * con.y + t * t * end.y;
+            log("quad x:" + x + ", y:" + y);
+            points.add(new PointF(x, y));
+        }
 //        for (float i = 0; i <= 1; i += 0.001f) {
 //            float xx = start.x + (con.x - start.x) * i;
 //            float yy = start.y + (con.y - start.y) * i;
@@ -247,8 +282,8 @@ public class Bezier extends View {
 //            mPoints1.add(new PointF(xx, yy));
 //            mPoints2.add(new PointF(xxx, yyy));
 //        }
-//        return points;
-//    }
+        return points;
+    }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
