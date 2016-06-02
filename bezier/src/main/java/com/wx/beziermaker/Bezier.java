@@ -117,6 +117,7 @@ public class Bezier extends View {
         mControlPoints.add(new PointF(200, 300));
         mControlPoints.add(new PointF(500, 200));
 //        mControlPoints.add(new PointF(300, 200));
+//        mControlPoints.add(new PointF(400, 300));
 
         // 贝塞尔曲线画笔
         mBezierPaint = new Paint();
@@ -155,32 +156,60 @@ public class Bezier extends View {
         mTextPaint = new Paint();
         mTextPaint.setColor(Color.BLACK);
         mTextPaint.setAntiAlias(true);
+        mTextPaint.setTextSize(45);
 
         mBezierPath = new Path();
     }
 
-    private ArrayList<PointF> createBezierPoints(ArrayList<PointF> controlPoints) {
+    private ArrayList<PointF> initBezierPoints(ArrayList<PointF> controlPoints) {
         ArrayList<PointF> points = new ArrayList<>();
-        int sum = controlPoints.size();
-        float x, y;
         for (float t = 0; t <= 1; t += 0.001f) {
 //            PointF pointF = createBezier(controlPoints, t);
-            PointF pointF = deCasteljau(controlPoints, t);
-            log("create:" + pointF);
+//            PointF pointF = deCasteljau(controlPoints, t);
+            PointF pointF = bezier(controlPoints, t);
             points.add(pointF);
-//            createBezier(controlPoints, t);
-//            x = createBezierX(controlPoints.get(0).x, controlPoints.get(1).x, t, sum - 1);
-//            y = createBezierY(controlPoints.get(0).y, controlPoints.get(1).y, t, sum - 1);
-//            log("x:" + x + ", y:" + y);
-//            x = (1 - t) * (1 - t) * start.x + 2 * t * (1 - t) * con.x + t * t * end.x;
-//            y = (1 - t) * (1 - t) * start.y + 2 * t * (1 - t) * con.y + t * t * end.y;
-//            points.add(new PointF(x, y));
         }
         return points;
     }
 
-    private float bezier(float p0, float p1, float t) {
-        return (1 - t) * p0 + t * p1;
+    public PointF bezier(ArrayList<PointF> controlPoints, float t) {
+        int order = controlPoints.size() - 1;
+        float x, y;
+        switch (order) {
+            case 1:
+                x = (1 - t) * controlPoints.get(0).x + t * controlPoints.get(1).x;
+                y = (1 - t) * controlPoints.get(0).y + t * controlPoints.get(1).y;
+                return new PointF(x, y);
+            case 2:
+                x = (float) (Math.pow((1 - t), 2) * controlPoints.get(0).x + 2 * t * (1 - t) * controlPoints.get(1).x
+                        + Math.pow(t, 2) *
+                        controlPoints.get(2).x);
+                y = (float) (Math.pow((1 - t), 2) * controlPoints.get(0).y + 2 * t * (1 - t) * controlPoints.get(1).y
+                        + Math.pow(t, 2) *
+                        controlPoints.get(2).y);
+                return new PointF(x, y);
+            case 3:
+                x = (float) (Math.pow((1 - t), 3) * controlPoints.get(0).x + 3 * t * Math.pow((1 - t), 2) *
+                        controlPoints.get(1).x + 3 * Math.pow(t, 2) * (1 - t) * controlPoints.get(2).x + Math.pow(t,
+                        3) * controlPoints.get(3).x);
+                y = (float) (Math.pow((1 - t), 3) * controlPoints.get(0).y + 3 * t * Math.pow((1 - t), 2) *
+                        controlPoints.get(1).y + 3 * Math.pow(t, 2) * (1 - t) * controlPoints.get(2).y + Math.pow(t,
+                        3) * controlPoints.get(3).y);
+                return new PointF(x, y);
+            case 4:
+                x = (float) (Math.pow((1 - t), 4) * controlPoints.get(0).x + 4 * t * Math.pow((1 - t), 3) *
+                        controlPoints.get
+                                (1).x + 4 * Math.pow(t, 2) * Math.pow((1 - t), 2) * controlPoints.get(2).x + 4 * Math
+                        .pow(t,
+                                3) * (1 - t) * controlPoints.get(3).x + Math.pow(t, 4) * controlPoints.get(4).x);
+                y = (float) (Math.pow((1 - t), 4) * controlPoints.get(0).y + 4 * t * Math.pow((1 - t), 3) *
+                        controlPoints.get
+                                (1).y + 4 * Math.pow(t, 2) * Math.pow((1 - t), 2) * controlPoints.get(2).y + 4 * Math
+                        .pow(t,
+                                3) * (1 - t) * controlPoints.get(3).y + Math.pow(t, 4) * controlPoints.get(4).y);
+                return new PointF(x, y);
+        }
+        return null;
     }
 
     public static PointF deCasteljau(ArrayList<PointF> controlPoints, float t) {
@@ -223,46 +252,7 @@ public class Bezier extends View {
             }
         }
 
-//        for (unsigned int i = 1; i <= tempPoints.size(); i++){
-//            for (unsigned int j = 0; j < tempPoints.size()-i; j++)
-//            tempPoints[j] = tempPoints[j] * (1-t) + tempPoints[j+1] * t;
-//        }
-//        return tempPoints[0];
-//        for (int j = 0; j < size - 1; j++) {
-////            temp1 = bezier(temps[j].x, temps[j + 1].x, t);
-//            temp1 = temp2 * (1 - t) + temps[j + 1].x * t;
-//            temp2 = temp1;
-//            temp3 = temp4 * (1 - t) + temps[j + 1].y * t;
-//            temp4 = temp3;
-////                temps[j].x = temps[j].x * (i - t) + temps[j + 1].x * t;
-////                temps[j].y = temps[j].y * (i - t) + temps[j + 1].y * t;
-//        }
         return new PointF(temp2, temp4);
-    }
-
-    private float createBezierX(float p0, float p1, float t, int num) {
-        float bt = (1 - t) * p0 + t * p1;
-        if (num != 3) {
-//            log("p0:" + p0 + ", p1:" + p1 + ", num:" + num);
-        }
-        if (num == 1) {
-            return bt;
-        } else {
-            return (1 - t) * createBezierX(mControlPoints.get(num - 2).x, mControlPoints.get(num - 1).x, t, num - 1) +
-                    t * createBezierX
-                            (mControlPoints.get(num - 1).x, mControlPoints.get(num).x, t, num - 1);
-        }
-    }
-
-    private float createBezierY(float p0, float p1, float t, int num) {
-        float bt = (1 - t) * p0 + t * p1;
-        if (num == 1) {
-            return bt;
-        } else {
-            return (1 - t) * createBezierY(mControlPoints.get(num - 2).y, mControlPoints.get(num - 1).y, t, num - 1) +
-                    t * createBezierY
-                            (mControlPoints.get(num - 1).y, mControlPoints.get(num).y, t, num - 1);
-        }
     }
 
     private ArrayList<PointF> createQuad(PointF start, PointF con, PointF end) {
@@ -377,6 +367,7 @@ public class Bezier extends View {
                             mLinePaint);
                 }
                 canvas.drawCircle(point.x, point.y, CONTROL_RADIUS, mControlPaint);
+                canvas.drawText("p" + i, point.x + CONTROL_RADIUS * 2, point.y + CONTROL_RADIUS * 2, mTextPaint);
             }
 
             // 切线
@@ -403,6 +394,7 @@ public class Bezier extends View {
                             mLinePaint);
                 }
                 canvas.drawCircle(point.x, point.y, CONTROL_RADIUS, mControlPaint);
+                canvas.drawText("p" + i, point.x + CONTROL_RADIUS * 2, point.y + CONTROL_RADIUS * 2, mTextPaint);
             }
         }
     }
@@ -444,7 +436,7 @@ public class Bezier extends View {
     public void start() {
         if (mRun) {
             mBezierPoint = null;
-            mBezierPoints = createBezierPoints(mControlPoints);
+            mBezierPoints = initBezierPoints(mControlPoints);
 //            mBezierPoints = createQuad(mControlPoints.get(0), mControlPoints.get(1), mControlPoints.get(2));
             log("run:" + mControlPoints.size() + ", " + mBezierPoints.size());
             mRun = true;
