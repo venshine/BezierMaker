@@ -18,7 +18,10 @@ package com.wx.beziermaker.demo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.SeekBar;
 
+import com.wx.android.common.util.ToastUtils;
+import com.wx.android.common.util.VibratorUtils;
 import com.wx.beziermaker.Bezier;
 
 /**
@@ -30,15 +33,54 @@ public class MainActivity extends AppCompatActivity {
 
     private Bezier mBezier;
 
+    private SeekBar mSeekBar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mBezier = (Bezier) findViewById(R.id.bezier);
+        mSeekBar = (SeekBar) findViewById(R.id.seekbar);
+        mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (progress == 0) {
+                    progress = 1;
+                }
+                mBezier.setRate(progress * 2);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
     }
 
     public void start(View view) {
         mBezier.start();
+        VibratorUtils.vibrate(this);
+    }
+
+    public void add(View view) {
+        if (mBezier.addPoint()) {
+            VibratorUtils.vibrate(this, 500);
+        } else {
+            ToastUtils.showToast("添加控制点超过上限");
+        }
+    }
+
+    public void del(View view) {
+        if (mBezier.delPoint()) {
+            VibratorUtils.vibrate(this, 500);
+        } else {
+            ToastUtils.showToast("删除控制点超过下限");
+        }
     }
 
 }
