@@ -22,7 +22,7 @@ import android.widget.SeekBar;
 
 import com.wx.android.common.util.ToastUtils;
 import com.wx.android.common.util.VibratorUtils;
-import com.wx.beziermaker.Bezier;
+import com.wx.beziermaker.BezierView;
 
 /**
  * Demo
@@ -31,7 +31,7 @@ import com.wx.beziermaker.Bezier;
  */
 public class MainActivity extends AppCompatActivity {
 
-    private Bezier mBezier;
+    private BezierView mBezierView;
 
     private SeekBar mSeekBar;
 
@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mBezier = (Bezier) findViewById(R.id.bezier);
+        mBezierView = (BezierView) findViewById(R.id.bezier);
         mSeekBar = (SeekBar) findViewById(R.id.seekbar);
         mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
                 if (progress == 0) {
                     progress = 1;
                 }
-                mBezier.setRate(progress * 2);
+                mBezierView.setRate(progress * 2);
             }
 
             @Override
@@ -63,12 +63,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void start(View view) {
-        mBezier.start();
+        mBezierView.start();
         VibratorUtils.vibrate(this);
     }
 
     public void add(View view) {
-        if (mBezier.addPoint()) {
+        if (mBezierView.addPoint()) {
             VibratorUtils.vibrate(this, 500);
         } else {
             ToastUtils.showToast("添加控制点超过上限");
@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void del(View view) {
-        if (mBezier.delPoint()) {
+        if (mBezierView.delPoint()) {
             VibratorUtils.vibrate(this, 500);
         } else {
             ToastUtils.showToast("删除控制点超过下限");

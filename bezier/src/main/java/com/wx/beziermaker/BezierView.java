@@ -25,7 +25,6 @@ import android.graphics.RectF;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -34,9 +33,11 @@ import java.util.ArrayList;
 import java.util.Random;
 
 /**
+ * 贝塞尔曲线
+ *
  * @author venshine
  */
-public class Bezier extends View {
+public class BezierView extends View {
 
     private static final int COUNT = 9;  // 贝塞尔曲线阶数
     private static final int REGION_WIDTH = 30;  // 合法区域宽度
@@ -45,8 +46,11 @@ public class Bezier extends View {
     private static final int TANGENT_WIDTH = 10;  // 切线线宽
     private static final int CONTROL_WIDTH = 12;    // 控制点连线线宽
     private static final int CONTROL_RADIUS = 12;  // 控制点半径
+    private static final int TEXT_SIZE = 40;    // 文字画笔尺寸
+    private static final int TEXT_HEIGHT = 60;  // 文本高度
     private static final int RATE = 10; // 移动速率
     private static final int HANDLER_WHAT = 100;
+    private static final int FRAME = 1000;  // 1000帧
 
     private Path mBezierPath = null;    // 贝塞尔曲线路径
 
@@ -93,11 +97,9 @@ public class Bezier extends View {
                     return;
                 }
                 if (mR != mBezierPoints.size() - 1 && mR + mRate >= mBezierPoints.size()) {
-                    mBezierPoint = new PointF(mBezierPoints.get(mBezierPoints.size() - 1).x, mBezierPoints.get
-                            (mBezierPoints.size() - 1).y);
-                } else {
-                    mBezierPoint = new PointF(mBezierPoints.get(mR).x, mBezierPoints.get(mR).y);
+                    mR = mBezierPoints.size() - 1;
                 }
+                mBezierPoint = new PointF(mBezierPoints.get(mR).x, mBezierPoints.get(mR).y);
 //                mP1 = new PointF(mPoints1.get(mR).x, mPoints1.get(mR).y);
 //                mP2 = new PointF(mPoints2.get(mR).x, mPoints2.get(mR).y);
                 invalidate();
@@ -105,17 +107,17 @@ public class Bezier extends View {
         }
     };
 
-    public Bezier(Context context) {
+    public BezierView(Context context) {
         super(context);
         init();
     }
 
-    public Bezier(Context context, AttributeSet attrs) {
+    public BezierView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init();
     }
 
-    public Bezier(Context context, AttributeSet attrs, int defStyleAttr) {
+    public BezierView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
     }
@@ -123,11 +125,10 @@ public class Bezier extends View {
     private void init() {
         // 初始坐标
         mControlPoints = new ArrayList<>(COUNT + 1);
-        mControlPoints.add(new PointF(150, 300));
-        mControlPoints.add(new PointF(100, 100));
-        mControlPoints.add(new PointF(400, 100));
-        mControlPoints.add(new PointF(450, 300));
-        mControlPoints.add(new PointF(500, 120));
+        int w = getResources().getDisplayMetrics().widthPixels;
+        mControlPoints.add(new PointF(w / 5, w / 5));
+        mControlPoints.add(new PointF(w / 3, w / 2));
+        mControlPoints.add(new PointF(w / 3 * 2, w / 4));
 
         // 贝塞尔曲线画笔
         mBezierPaint = new Paint();
@@ -166,13 +167,13 @@ public class Bezier extends View {
         mTextPointPaint = new Paint();
         mTextPointPaint.setColor(Color.BLACK);
         mTextPointPaint.setAntiAlias(true);
-        mTextPointPaint.setTextSize(45);
+        mTextPointPaint.setTextSize(TEXT_SIZE);
 
         // 文字画笔
         mTextPaint = new Paint();
         mTextPaint.setColor(Color.GRAY);
         mTextPaint.setAntiAlias(true);
-        mTextPaint.setTextSize(40);
+        mTextPaint.setTextSize(TEXT_SIZE);
 
         mBezierPath = new Path();
     }
@@ -185,7 +186,8 @@ public class Bezier extends View {
     private ArrayList<PointF> buildBezierPoints() {
         ArrayList<PointF> points = new ArrayList<>();
         int order = mControlPoints.size() - 1;
-        for (float t = 0; t <= 1; t += 0.001f) {
+        float delta = 1.0f / FRAME;
+        for (float t = 0; t <= 1; t += delta) {
             points.add(new PointF(deCasteljauX(order, 0, t), deCasteljauY(order, 0, t)));
         }
         return points;
@@ -307,23 +309,32 @@ public class Bezier extends View {
             for (int i = 0; i < size; i++) {
                 point = mControlPoints.get(i);
                 if (i > 0) {
+                    // 控制点连线
                     canvas.drawLine(mControlPoints.get(i - 1).x, mControlPoints.get(i - 1).y, point.x, point.y,
                             mLinePaint);
                 }
+                // 控制点
                 canvas.drawCircle(point.x, point.y, CONTROL_RADIUS, mControlPaint);
+                // 控制点文本
                 canvas.drawText("p" + i, point.x + CONTROL_RADIUS * 2, point.y + CONTROL_RADIUS * 2, mTextPointPaint);
+                // 控制点文本展示
                 canvas.drawText("p" + i + " ( " + new DecimalFormat("##0.0").format(point.x) + " , " + new DecimalFormat
-                        ("##0.0").format(point.y) + ") ", REGION_WIDTH, mHeight - (size - i) * 60, mTextPaint);
+                        ("##0.0").format(point.y) + ") ", REGION_WIDTH, mHeight - (size - i) * TEXT_HEIGHT, mTextPaint);
+
             }
 
             // 切线
+
 //            canvas.drawLine(mP1.x, mP1.y, mP2.x, mP2.y, mTangentPaint);
 
             // Bezier曲线
             mBezierPath.lineTo(mBezierPoint.x, mBezierPoint.y);
             canvas.drawPath(mBezierPath, mBezierPaint);
-//             Bezier曲线起始移动点
+            // Bezier曲线起始移动点
             canvas.drawCircle(mBezierPoint.x, mBezierPoint.y, CONTROL_RADIUS, mMovingPaint);
+            // 时间展示
+            canvas.drawText("t:" + (new DecimalFormat("##0.000").format((float) mR / FRAME)), mWidth - TEXT_HEIGHT *
+                    3, mHeight - TEXT_HEIGHT, mTextPaint);
 
             mHandler.removeMessages(HANDLER_WHAT);
             mHandler.sendEmptyMessage(HANDLER_WHAT);
@@ -341,7 +352,7 @@ public class Bezier extends View {
                 canvas.drawCircle(point.x, point.y, CONTROL_RADIUS, mControlPaint);
                 canvas.drawText("p" + i, point.x + CONTROL_RADIUS * 2, point.y + CONTROL_RADIUS * 2, mTextPointPaint);
                 canvas.drawText("p" + i + " ( " + new DecimalFormat("##0.0").format(point.x) + " , " + new DecimalFormat
-                        ("##0.0").format(point.y) + ") ", REGION_WIDTH, mHeight - (size - i) * 60, mTextPaint);
+                        ("##0.0").format(point.y) + ") ", REGION_WIDTH, mHeight - (size - i) * TEXT_HEIGHT, mTextPaint);
             }
         }
     }
@@ -403,7 +414,10 @@ public class Bezier extends View {
         float x = mControlPoints.get(size - 1).x;
         float y = mControlPoints.get(size - 1).y;
         int r = mWidth / 5;
-        float[][] region = {{0, r}, {0, -r}, {r, r}, {-r, -r}, {r, 0}, {-r, 0}};
+        float[][] region = {{0, r}, {0, -r}, {r, r}, {-r, -r}, {r, 0}, {-r, 0}, {0, 1.5f * r}, {0, -1.5f * r}, {1.5f
+                * r, 1.5f *
+                r}, {-1.5f * r, -1.5f * r}, {1.5f * r, 0}, {-1.5f * r, 0}, {0, 2 * r}, {0, -2 * r}, {2 * r, 2 *
+                r}, {-2 * r, -2 * r}, {2 * r, 0}, {-2 * r, 0}};
         int t = 0;
         int len = region.length;
         while (true) {  // 随机赋值
@@ -468,10 +482,6 @@ public class Bezier extends View {
      */
     public void setLoop(boolean loop) {
         mLoop = loop;
-    }
-
-    private void log(String msg) {
-        Log.d("venshine", msg);
     }
 
 }
