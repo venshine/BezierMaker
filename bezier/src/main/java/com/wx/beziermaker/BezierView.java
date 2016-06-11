@@ -39,7 +39,7 @@ import java.util.Random;
  */
 public class BezierView extends View {
 
-    private static final int COUNT = 9;  // 贝塞尔曲线阶数
+    private static final int MAX_COUNT = 7;  // 贝塞尔曲线最大阶数
     private static final int REGION_WIDTH = 30;  // 合法区域宽度
     private static final int FINGER_RECT_SIZE = 60;   // 矩形尺寸
     private static final int BEZIER_WIDTH = 10;   // 贝塞尔曲线线宽
@@ -51,6 +51,8 @@ public class BezierView extends View {
     private static final int RATE = 10; // 移动速率
     private static final int HANDLER_WHAT = 100;
     private static final int FRAME = 1000;  // 1000帧
+    private static final String[] TANGENT_COLORS = {"#7fff00", "#7a67ee", "#ee82ee", "#ffd700", "#1c86ee",
+            "#8b8b00"};  // 切线颜色
 
     private Path mBezierPath = null;    // 贝塞尔曲线路径
 
@@ -67,18 +69,21 @@ public class BezierView extends View {
 
     private ArrayList<PointF> mControlPoints = null;    // 控制点集
 
-    private ArrayList<PointF> mPoints1 = new ArrayList<>();
-    private ArrayList<PointF> mPoints2 = new ArrayList<>();
+    private ArrayList<ArrayList<ArrayList<PointF>>> mTangentPoints; // 切线点集
+
+    private ArrayList<ArrayList<PointF>> mInstantTangentPoints;
 
     private int mR = 0;  // 移动速率
 
     private int mRate = RATE;   // 速率
 
-    private boolean mLoop = false;  // 设置是否循环
-
     private boolean mRun = true;   // 运行状态
 
     private boolean mTouch = true; // 控制状态
+
+    private boolean mLoop = false;  // 设置是否循环
+
+    private boolean mTangent = false;   // 设置是否显示切线
 
     private int mWidth = 0, mHeight = 0;    // 画布宽高
 
@@ -99,9 +104,22 @@ public class BezierView extends View {
                 if (mR != mBezierPoints.size() - 1 && mR + mRate >= mBezierPoints.size()) {
                     mR = mBezierPoints.size() - 1;
                 }
+                // Bezier点
                 mBezierPoint = new PointF(mBezierPoints.get(mR).x, mBezierPoints.get(mR).y);
-//                mP1 = new PointF(mPoints1.get(mR).x, mPoints1.get(mR).y);
-//                mP2 = new PointF(mPoints2.get(mR).x, mPoints2.get(mR).y);
+                // 切线点
+                int size = mTangentPoints.size();
+                ArrayList<PointF> instantpoints;
+                mInstantTangentPoints = new ArrayList<>();
+                for (int i = 0; i < size; i++) {
+                    int len = mTangentPoints.get(i).size();
+                    instantpoints = new ArrayList<>();
+                    for (int j = 0; j < len; j++) {
+                        float x = mTangentPoints.get(j).get(i).get(mR).x;
+                        float y = mTangentPoints.get(j).get(i).get(mR).y;
+                        instantpoints.add(new PointF(x, y));
+                    }
+                    mInstantTangentPoints.add(instantpoints);
+                }
                 invalidate();
             }
         }
@@ -124,7 +142,7 @@ public class BezierView extends View {
 
     private void init() {
         // 初始坐标
-        mControlPoints = new ArrayList<>(COUNT + 1);
+        mControlPoints = new ArrayList<>(MAX_COUNT + 1);
         int w = getResources().getDisplayMetrics().widthPixels;
         mControlPoints.add(new PointF(w / 5, w / 5));
         mControlPoints.add(new PointF(w / 3, w / 2));
@@ -151,7 +169,7 @@ public class BezierView extends View {
 
         // 切线画笔
         mTangentPaint = new Paint();
-        mTangentPaint.setColor(Color.GREEN);
+        mTangentPaint.setColor(Color.parseColor(TANGENT_COLORS[0]));
         mTangentPaint.setAntiAlias(true);
         mTangentPaint.setStrokeWidth(TANGENT_WIDTH);
         mTangentPaint.setStyle(Paint.Style.FILL);
@@ -188,9 +206,55 @@ public class BezierView extends View {
         int order = mControlPoints.size() - 1;
         float delta = 1.0f / FRAME;
         for (float t = 0; t <= 1; t += delta) {
+            // Bezier点集
             points.add(new PointF(deCasteljauX(order, 0, t), deCasteljauY(order, 0, t)));
         }
         return points;
+    }
+
+    /**
+     * 创建切线点集
+     */
+    private ArrayList<ArrayList<ArrayList<PointF>>> buildTangentPoints() {
+        ArrayList<PointF> points;   // 1条线点集
+        ArrayList<ArrayList<PointF>> morepoints;    // 多条线点集
+        ArrayList<ArrayList<ArrayList<PointF>>> allpoints = new ArrayList<>();  // 所有点集
+        PointF point;
+        int order = mControlPoints.size() - 1;
+        float delta = 1.0f / FRAME;
+        for (int i = 0; i < order - 1; i++) {
+            int size = allpoints.size();
+            morepoints = new ArrayList<>();
+            for (int j = 0; j < order - i; j++) {
+                points = new ArrayList<>();
+                for (float t = 0; t <= 1; t += delta) {
+                    float p0x = 0;
+                    float p1x = 0;
+                    float p0y = 0;
+                    float p1y = 0;
+                    int z = (int) (t * FRAME);
+                    if (size > 0) {
+                        p0x = allpoints.get(j - 1).get(i).get(z).x;
+                        p1x = allpoints.get(j - 1).get(i + 1).get(z).x;
+                        p0y = allpoints.get(j - 1).get(i).get(z).y;
+                        p1y = allpoints.get(j - 1).get(i + 1).get(z).y;
+                    } else {
+                        p0x = mControlPoints.get(i).x;
+                        p1x = mControlPoints.get(i + 1).x;
+                        p0y = mControlPoints.get(i).y;
+                        p1y = mControlPoints.get(i + 1).y;
+                    }
+                    float x = (1 - t) * p0x + t * p1x;
+                    float y = (1 - t) * p0y + t * p1y;
+                    point = new PointF(x, y);
+                    points.add(point);
+                }
+                morepoints.add(points);
+            }
+            allpoints.add(morepoints);
+        }
+
+        return allpoints;
     }
 
     /**
@@ -324,8 +388,21 @@ public class BezierView extends View {
             }
 
             // 切线
-
-//            canvas.drawLine(mP1.x, mP1.y, mP2.x, mP2.y, mTangentPaint);
+            if (mInstantTangentPoints != null) {
+                int tsize = mInstantTangentPoints.size();
+                ArrayList<PointF> tps;
+                for (int i = 0; i < tsize; i++) {
+                    tps = mInstantTangentPoints.get(i);
+                    int tlen = tps.size();
+                    for (int j = 0; j < tlen - 1; j++) {
+                        mTangentPaint.setColor(Color.parseColor(TANGENT_COLORS[i]));
+                        canvas.drawLine(tps.get(i).x, tps.get(i).y, tps.get(i + 1).x, tps.get(i + 1).y,
+                                mTangentPaint);
+                        canvas.drawCircle(tps.get(i).x, tps.get(i).y, CONTROL_RADIUS, mTangentPaint);
+                        canvas.drawCircle(tps.get(i + 1).x, tps.get(i + 1).y, CONTROL_RADIUS, mTangentPaint);
+                    }
+                }
+            }
 
             // Bezier曲线
             mBezierPath.lineTo(mBezierPoint.x, mBezierPoint.y);
@@ -394,7 +471,9 @@ public class BezierView extends View {
     public void start() {
         if (mRun) {
             mBezierPoint = null;
+            mInstantTangentPoints = null;
             mBezierPoints = buildBezierPoints();
+            mTangentPoints = buildTangentPoints();
             mRun = true;
             mTouch = false;
             invalidate();
@@ -407,7 +486,7 @@ public class BezierView extends View {
     public boolean addPoint() {
         mRun = false;
         int size = mControlPoints.size();
-        if (size >= COUNT + 1) {
+        if (size >= MAX_COUNT + 1) {
             mRun = true;
             return false;
         }
@@ -473,6 +552,15 @@ public class BezierView extends View {
      */
     public void setRate(int rate) {
         mRate = rate;
+    }
+
+    /**
+     * 设置是否显示切线
+     *
+     * @param tangent
+     */
+    public void setTangent(boolean tangent) {
+        mTangent = tangent;
     }
 
     /**
