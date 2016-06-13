@@ -278,7 +278,7 @@ public class BezierView extends View {
      * @param t 时间
      * @return
      */
-    public float deCasteljauX(int i, int j, float t) {
+    private float deCasteljauX(int i, int j, float t) {
         if (i == 1) {
             return (1 - t) * mControlPoints.get(j).x + t * mControlPoints.get(j + 1).x;
         }
@@ -293,7 +293,7 @@ public class BezierView extends View {
      * @param t 时间
      * @return
      */
-    public float deCasteljauY(int i, int j, float t) {
+    private float deCasteljauY(int i, int j, float t) {
         if (i == 1) {
             return (1 - t) * mControlPoints.get(j).y + t * mControlPoints.get(j + 1).y;
         }
