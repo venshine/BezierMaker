@@ -43,7 +43,7 @@ public class BezierView extends View {
     private static final int REGION_WIDTH = 30;  // 合法区域宽度
     private static final int FINGER_RECT_SIZE = 60;   // 矩形尺寸
     private static final int BEZIER_WIDTH = 10;   // 贝塞尔曲线线宽
-    private static final int TANGENT_WIDTH = 10;  // 切线线宽
+    private static final int TANGENT_WIDTH = 6;  // 切线线宽
     private static final int CONTROL_WIDTH = 12;    // 控制点连线线宽
     private static final int CONTROL_RADIUS = 12;  // 控制点半径
     private static final int TEXT_SIZE = 40;    // 文字画笔尺寸
@@ -53,6 +53,10 @@ public class BezierView extends View {
     private static final int FRAME = 1000;  // 1000帧
     private static final String[] TANGENT_COLORS = {"#7fff00", "#7a67ee", "#ee82ee", "#ffd700", "#1c86ee",
             "#8b8b00"};  // 切线颜色
+    private static final int STATE_READY = 0x0001;
+    private static final int STATE_RUNNING = 0x0002;
+    private static final int STATE_STOP = 0x0004;
+    private static final int STATE_TOUCH = 0x0010;
 
     private Path mBezierPath = null;    // 贝塞尔曲线路径
 
@@ -77,13 +81,11 @@ public class BezierView extends View {
 
     private int mRate = RATE;   // 速率
 
-    private boolean mRun = true;   // 运行状态
-
-    private boolean mTouch = true; // 控制状态
+    private int mState; // 状态
 
     private boolean mLoop = false;  // 设置是否循环
 
-    private boolean mTangent = false;   // 设置是否显示切线
+    private boolean mTangent = true;   // 设置是否显示切线
 
     private int mWidth = 0, mHeight = 0;    // 画布宽高
 
@@ -97,8 +99,12 @@ public class BezierView extends View {
                 if (mR >= mBezierPoints.size()) {
                     removeMessages(HANDLER_WHAT);
                     mR = 0;
-                    mRun = false;
-                    mTouch = true;
+                    mState &= ~STATE_RUNNING;
+                    mState &= ~STATE_STOP;
+                    mState |= STATE_READY | STATE_TOUCH;
+                    if (mLoop) {
+                        start();
+                    }
                     return;
                 }
                 if (mR != mBezierPoints.size() - 1 && mR + mRate >= mBezierPoints.size()) {
@@ -107,18 +113,23 @@ public class BezierView extends View {
                 // Bezier点
                 mBezierPoint = new PointF(mBezierPoints.get(mR).x, mBezierPoints.get(mR).y);
                 // 切线点
-                int size = mTangentPoints.size();
-                ArrayList<PointF> instantpoints;
-                mInstantTangentPoints = new ArrayList<>();
-                for (int i = 0; i < size; i++) {
-                    int len = mTangentPoints.get(i).size();
-                    instantpoints = new ArrayList<>();
-                    for (int j = 0; j < len; j++) {
-                        float x = mTangentPoints.get(j).get(i).get(mR).x;
-                        float y = mTangentPoints.get(j).get(i).get(mR).y;
-                        instantpoints.add(new PointF(x, y));
+                if (mTangent) {
+                    int size = mTangentPoints.size();
+                    ArrayList<PointF> instantpoints;
+                    mInstantTangentPoints = new ArrayList<>();
+                    for (int i = 0; i < size; i++) {
+                        int len = mTangentPoints.get(i).size();
+                        instantpoints = new ArrayList<>();
+                        for (int j = 0; j < len; j++) {
+                            float x = mTangentPoints.get(i).get(j).get(mR).x;
+                            float y = mTangentPoints.get(i).get(j).get(mR).y;
+                            instantpoints.add(new PointF(x, y));
+                        }
+                        mInstantTangentPoints.add(instantpoints);
                     }
-                    mInstantTangentPoints.add(instantpoints);
+                }
+                if (mR == mBezierPoints.size() - 1) {
+                    mState |= STATE_STOP;
                 }
                 invalidate();
             }
@@ -194,6 +205,8 @@ public class BezierView extends View {
         mTextPaint.setTextSize(TEXT_SIZE);
 
         mBezierPath = new Path();
+
+        mState |= STATE_READY | STATE_TOUCH;
     }
 
     /**
@@ -234,15 +247,15 @@ public class BezierView extends View {
                     float p1y = 0;
                     int z = (int) (t * FRAME);
                     if (size > 0) {
-                        p0x = allpoints.get(j - 1).get(i).get(z).x;
-                        p1x = allpoints.get(j - 1).get(i + 1).get(z).x;
-                        p0y = allpoints.get(j - 1).get(i).get(z).y;
-                        p1y = allpoints.get(j - 1).get(i + 1).get(z).y;
+                        p0x = allpoints.get(i - 1).get(j).get(z).x;
+                        p1x = allpoints.get(i - 1).get(j + 1).get(z).x;
+                        p0y = allpoints.get(i - 1).get(j).get(z).y;
+                        p1y = allpoints.get(i - 1).get(j + 1).get(z).y;
                     } else {
-                        p0x = mControlPoints.get(i).x;
-                        p1x = mControlPoints.get(i + 1).x;
-                        p0y = mControlPoints.get(i).y;
-                        p1y = mControlPoints.get(i + 1).y;
+                        p0x = mControlPoints.get(j).x;
+                        p1x = mControlPoints.get(j + 1).x;
+                        p0y = mControlPoints.get(j).y;
+                        p1y = mControlPoints.get(j + 1).y;
                     }
                     float x = (1 - t) * p0x + t * p1x;
                     float y = (1 - t) * p0y + t * p1y;
@@ -361,7 +374,7 @@ public class BezierView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        if (mRun && !mTouch) {
+        if (isRunning() && !isTouchable()) {
             if (mBezierPoint == null) {
                 mBezierPath.reset();
                 mBezierPoint = mBezierPoints.get(0);
@@ -388,7 +401,7 @@ public class BezierView extends View {
             }
 
             // 切线
-            if (mInstantTangentPoints != null) {
+            if (mTangent && mInstantTangentPoints != null && !isStop()) {
                 int tsize = mInstantTangentPoints.size();
                 ArrayList<PointF> tps;
                 for (int i = 0; i < tsize; i++) {
@@ -396,10 +409,10 @@ public class BezierView extends View {
                     int tlen = tps.size();
                     for (int j = 0; j < tlen - 1; j++) {
                         mTangentPaint.setColor(Color.parseColor(TANGENT_COLORS[i]));
-                        canvas.drawLine(tps.get(i).x, tps.get(i).y, tps.get(i + 1).x, tps.get(i + 1).y,
+                        canvas.drawLine(tps.get(j).x, tps.get(j).y, tps.get(j + 1).x, tps.get(j + 1).y,
                                 mTangentPaint);
-                        canvas.drawCircle(tps.get(i).x, tps.get(i).y, CONTROL_RADIUS, mTangentPaint);
-                        canvas.drawCircle(tps.get(i + 1).x, tps.get(i + 1).y, CONTROL_RADIUS, mTangentPaint);
+                        canvas.drawCircle(tps.get(j).x, tps.get(j).y, CONTROL_RADIUS, mTangentPaint);
+                        canvas.drawCircle(tps.get(j + 1).x, tps.get(j + 1).y, CONTROL_RADIUS, mTangentPaint);
                     }
                 }
             }
@@ -416,7 +429,7 @@ public class BezierView extends View {
             mHandler.removeMessages(HANDLER_WHAT);
             mHandler.sendEmptyMessage(HANDLER_WHAT);
         }
-        if (mTouch) {
+        if (isTouchable()) {
             // 控制点和控制点连线
             int size = mControlPoints.size();
             PointF point;
@@ -436,12 +449,12 @@ public class BezierView extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (!mTouch) {
+        if (!isTouchable()) {
             return true;
         }
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                mRun = false;
+                mState &= ~STATE_READY;
                 break;
             case MotionEvent.ACTION_MOVE:
                 float x = event.getX();
@@ -459,23 +472,56 @@ public class BezierView extends View {
                 break;
             case MotionEvent.ACTION_UP:
                 mCurPoint = null;
-                mRun = true;
+                mState |= STATE_READY;
                 break;
         }
         return true;
+    }
+
+    private boolean isReady() {
+        return (mState & STATE_READY) == STATE_READY;
+    }
+
+    private boolean isRunning() {
+        return (mState & STATE_RUNNING) == STATE_RUNNING;
+    }
+
+    private boolean isTouchable() {
+        return (mState & STATE_TOUCH) == STATE_TOUCH;
+    }
+
+    private boolean isStop() {
+        return (mState & STATE_STOP) == STATE_STOP;
     }
 
     /**
      * 开始
      */
     public void start() {
-        if (mRun) {
+        if (isReady()) {
             mBezierPoint = null;
             mInstantTangentPoints = null;
             mBezierPoints = buildBezierPoints();
-            mTangentPoints = buildTangentPoints();
-            mRun = true;
-            mTouch = false;
+            if (mTangent) {
+                mTangentPoints = buildTangentPoints();
+            }
+            mState &= ~STATE_READY;
+            mState &= ~STATE_TOUCH;
+            mState |= STATE_RUNNING;
+            invalidate();
+        }
+    }
+
+    /**
+     * 停止
+     */
+    public void stop() {
+        if (isRunning()) {
+            mHandler.removeMessages(HANDLER_WHAT);
+            mR = 0;
+            mState &= ~STATE_RUNNING;
+            mState &= ~STATE_STOP;
+            mState |= STATE_READY | STATE_TOUCH;
             invalidate();
         }
     }
@@ -484,65 +530,109 @@ public class BezierView extends View {
      * 添加控制点
      */
     public boolean addPoint() {
-        mRun = false;
-        int size = mControlPoints.size();
-        if (size >= MAX_COUNT + 1) {
-            mRun = true;
-            return false;
-        }
-        float x = mControlPoints.get(size - 1).x;
-        float y = mControlPoints.get(size - 1).y;
-        int r = mWidth / 5;
-        float[][] region = {{0, r}, {0, -r}, {r, r}, {-r, -r}, {r, 0}, {-r, 0}, {0, 1.5f * r}, {0, -1.5f * r}, {1.5f
-                * r, 1.5f *
-                r}, {-1.5f * r, -1.5f * r}, {1.5f * r, 0}, {-1.5f * r, 0}, {0, 2 * r}, {0, -2 * r}, {2 * r, 2 *
-                r}, {-2 * r, -2 * r}, {2 * r, 0}, {-2 * r, 0}};
-        int t = 0;
-        int len = region.length;
-        while (true) {  // 随机赋值
-            t++;
-            if (t > len) {  // 超出region长度，跳出随机赋值
-                t = 0;
-                break;
+        if (isReady()) {
+            int size = mControlPoints.size();
+            if (size >= MAX_COUNT + 1) {
+                return false;
             }
-            int rand = new Random().nextInt(len);
-            float px = x + region[rand][0];
-            float py = y + region[rand][1];
-            if (isLegalTouchRegion(px, py)) {
-                mControlPoints.add(new PointF(px, py));
-                invalidate();
-                break;
-            }
-        }
-        if (t == 0) {   // 超出region长度而未赋值时，循环赋值
-            for (int i = 0; i < len; i++) {
-                float px = x + region[i][0];
-                float py = y + region[i][1];
+            float x = mControlPoints.get(size - 1).x;
+            float y = mControlPoints.get(size - 1).y;
+            int r = mWidth / 5;
+            float[][] region = {{0, r}, {0, -r}, {r, r}, {-r, -r}, {r, 0}, {-r, 0}, {0, 1.5f * r}, {0, -1.5f * r}, {1.5f
+                    * r, 1.5f *
+                    r}, {-1.5f * r, -1.5f * r}, {1.5f * r, 0}, {-1.5f * r, 0}, {0, 2 * r}, {0, -2 * r}, {2 * r, 2 *
+                    r}, {-2 * r, -2 * r}, {2 * r, 0}, {-2 * r, 0}};
+            int t = 0;
+            int len = region.length;
+            while (true) {  // 随机赋值
+                t++;
+                if (t > len) {  // 超出region长度，跳出随机赋值
+                    t = 0;
+                    break;
+                }
+                int rand = new Random().nextInt(len);
+                float px = x + region[rand][0];
+                float py = y + region[rand][1];
                 if (isLegalTouchRegion(px, py)) {
                     mControlPoints.add(new PointF(px, py));
                     invalidate();
                     break;
                 }
             }
+            if (t == 0) {   // 超出region长度而未赋值时，循环赋值
+                for (int i = 0; i < len; i++) {
+                    float px = x + region[i][0];
+                    float py = y + region[i][1];
+                    if (isLegalTouchRegion(px, py)) {
+                        mControlPoints.add(new PointF(px, py));
+                        invalidate();
+                        break;
+                    }
+                }
+            }
+            return true;
         }
-        mRun = true;
-        return true;
+        return false;
     }
 
     /**
      * 删除控制点
      */
     public boolean delPoint() {
-        mRun = false;
-        int size = mControlPoints.size();
-        if (size <= 2) {
-            mRun = true;
-            return false;
+        if (isReady()) {
+            int size = mControlPoints.size();
+            if (size <= 2) {
+                return false;
+            }
+            mControlPoints.remove(size - 1);
+            invalidate();
+            return true;
         }
-        mControlPoints.remove(size - 1);
-        invalidate();
-        mRun = true;
-        return true;
+        return false;
+    }
+
+    /**
+     * 贝塞尔曲线阶数
+     *
+     * @return
+     */
+    public int getOrder() {
+        return mControlPoints.size() - 1;
+    }
+
+    /**
+     * 贝塞尔曲线阶数
+     *
+     * @return
+     */
+    public String getOrderStr() {
+        String str = "";
+        switch (getOrder()) {
+            case 1:
+                str = "一";
+                break;
+            case 2:
+                str = "二";
+                break;
+            case 3:
+                str = "三";
+                break;
+            case 4:
+                str = "四";
+                break;
+            case 5:
+                str = "五";
+                break;
+            case 6:
+                str = "六";
+                break;
+            case 7:
+                str = "七";
+                break;
+            default:
+                break;
+        }
+        return str;
     }
 
     /**
