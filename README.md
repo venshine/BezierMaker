@@ -13,11 +13,11 @@ Features
 
 ScreenShot
 --
-![](https://github.com/venshine/GoodView/blob/master/screenshot/1.gif)
+![](https://github.com/venshine/BezierMaker/blob/master/screenshot/1.gif)
 <br/>
-![](https://github.com/venshine/GoodView/blob/master/screenshot/2.gif)
+![](https://github.com/venshine/BezierMaker/blob/master/screenshot/2.gif)
 <br/>
-![](https://github.com/venshine/GoodView/blob/master/screenshot/3.gif)
+![](https://github.com/venshine/BezierMaker/blob/master/screenshot/3.gif)
 <br/>
 ![](https://github.com/venshine/GoodView/blob/master/screenshot/4.gif)
 <br/>
