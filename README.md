@@ -19,15 +19,15 @@ ScreenShot
 <br/>
 ![](https://github.com/venshine/BezierMaker/blob/master/screenshot/3.gif)
 <br/>
-![](https://github.com/venshine/GoodView/blob/master/screenshot/4.gif)
+![](https://github.com/venshine/BezierMaker/blob/master/screenshot/4.gif)
 <br/>
-![](https://github.com/venshine/GoodView/blob/master/screenshot/5.gif)
+![](https://github.com/venshine/BezierMaker/blob/master/screenshot/5.gif)
 <br/>
-![](https://github.com/venshine/GoodView/blob/master/screenshot/6.gif)
+![](https://github.com/venshine/BezierMaker/blob/master/screenshot/6.gif)
 <br/>
-![](https://github.com/venshine/GoodView/blob/master/screenshot/7.gif)
+![](https://github.com/venshine/BezierMaker/blob/master/screenshot/7.gif)
 <br/>
-![](https://github.com/venshine/GoodView/blob/master/screenshot/8.gif)
+![](https://github.com/venshine/BezierMaker/blob/master/screenshot/8.gif)
 <br/>
 
 Demo
