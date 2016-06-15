@@ -13,21 +13,21 @@ Features
 
 ScreenShot
 --
-![](https://github.com/venshine/BezierMaker/blob/master/screenshot/1.gif)
+![](http://o8tfd4klp.bkt.clouddn.com/image/beziermaker/1.gif)
 <br/>
-![](https://github.com/venshine/BezierMaker/blob/master/screenshot/2.gif)
+![](http://o8tfd4klp.bkt.clouddn.com/image/beziermaker/2.gif)
 <br/>
-![](https://github.com/venshine/BezierMaker/blob/master/screenshot/3.gif)
+![](http://o8tfd4klp.bkt.clouddn.com/image/beziermaker/3.gif)
 <br/>
-![](https://github.com/venshine/BezierMaker/blob/master/screenshot/4.gif)
+![](http://o8tfd4klp.bkt.clouddn.com/image/beziermaker/4.gif)
 <br/>
-![](https://github.com/venshine/BezierMaker/blob/master/screenshot/5.gif)
+![](http://o8tfd4klp.bkt.clouddn.com/image/beziermaker/5.gif)
 <br/>
-![](https://github.com/venshine/BezierMaker/blob/master/screenshot/6.gif)
+![](http://o8tfd4klp.bkt.clouddn.com/image/beziermaker/6.gif)
 <br/>
-![](https://github.com/venshine/BezierMaker/blob/master/screenshot/7.gif)
+![](http://o8tfd4klp.bkt.clouddn.com/image/beziermaker/7.gif)
 <br/>
-![](https://github.com/venshine/BezierMaker/blob/master/screenshot/8.gif)
+![](http://o8tfd4klp.bkt.clouddn.com/image/beziermaker/8.gif)
 <br/>
 
 Demo
