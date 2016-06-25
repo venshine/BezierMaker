@@ -82,6 +82,7 @@ Demo
 
 About
 --
+* [Android 绘制N阶Bezier曲线](http://blog.csdn.net/venshine/article/details/51758841)
 * Email：venshine.cn@gmail.com
 
 License
