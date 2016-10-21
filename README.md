@@ -17,11 +17,11 @@ Features
 
 ScreenShot
 --
-<img src="/screenshot/1.gif" width="33.3%"><img src="/screenshot/2.gif" width="33.3%"><img src="/screenshot/3.gif" width="33.3%">
+<img src="/screenshot/1.gif" width="33.3%"><img src="/screenshot/8.gif" width="33.3%">
 <br/>
-<img src="/screenshot/4.gif" width="33.3%"><img src="/screenshot/5.gif" width="33.3%"><img src="/screenshot/6.gif" width="33.3%">
+<img src="/screenshot/2.gif" width="33.3%"><img src="/screenshot/3.gif" width="33.3%"><img src="/screenshot/4.gif" width="33.3%">
 <br/>
-<img src="/screenshot/7.gif" width="33.3%"><img src="/screenshot/8.gif" width="33.3%">
+<img src="/screenshot/5.gif" width="33.3%"><img src="/screenshot/6.gif" width="33.3%"><img src="/screenshot/7.gif" width="33.3%">
 <br/>
 
 Demo
