@@ -17,16 +17,11 @@ Features
 
 ScreenShot
 --
-![](https://github.com/venshine/BezierMaker/blob/master/screenshot/1.gif)
-![](https://github.com/venshine/BezierMaker/blob/master/screenshot/2.gif)
-![](https://github.com/venshine/BezierMaker/blob/master/screenshot/3.gif)
+<img src="/screenshot/1.gif" width="33.3%"><img src="/screenshot/2.gif" width="33.3%"><img src="/screenshot/3.gif" width="33.3%">
 <br/>
-![](https://github.com/venshine/BezierMaker/blob/master/screenshot/4.gif)
-![](https://github.com/venshine/BezierMaker/blob/master/screenshot/5.gif)
-![](https://github.com/venshine/BezierMaker/blob/master/screenshot/6.gif)
+<img src="/screenshot/4.gif" width="33.3%"><img src="/screenshot/5.gif" width="33.3%"><img src="/screenshot/6.gif" width="33.3%">
 <br/>
-![](https://github.com/venshine/BezierMaker/blob/master/screenshot/7.gif)
-![](https://github.com/venshine/BezierMaker/blob/master/screenshot/8.gif)
+<img src="/screenshot/7.gif" width="33.3%"><img src="/screenshot/8.gif" width="33.3%">
 <br/>
 
 Demo
