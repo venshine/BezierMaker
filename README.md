@@ -14,6 +14,7 @@ Features
 * 支持循环显示贝塞尔曲线的形成动画
 * 支持贝塞尔曲线显示速率
 * 支持显示控制点坐标
+* 支持设置贝塞尔曲线阶数
 
 ScreenShot
 --
@@ -71,6 +72,7 @@ Demo
 | void **setRate**(int rate) 	     | 设置移动速率（optional） |
 | void **setTangent**(boolean tangent)  	     | 设置是否显示切线（optional） |
 | void **setLoop**(boolean loop)  	     | 设置是否循环（optional） |
+| void **setOrder**(int order)  	     | 设置贝塞尔曲线阶数（optional） |
 
 
 About
