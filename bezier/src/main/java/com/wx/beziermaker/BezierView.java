@@ -601,6 +601,28 @@ public class BezierView extends View {
     }
 
     /**
+     * 设置贝塞尔曲线阶数
+     *
+     * @param order
+     */
+    public void setOrder(int order) {
+        if (getOrder() == order) {
+            return;
+        }
+        stop();
+        int size = getOrder() - order;
+        if (size > 0) {
+            for (int i = 0; i < size; i++) {
+                delPoint();
+            }
+        } else if (size < 0) {
+            for (int i = -size; i > 0; i--) {
+                addPoint();
+            }
+        }
+    }
+
+    /**
      * 贝塞尔曲线阶数
      *
      * @return
