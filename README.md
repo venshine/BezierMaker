@@ -3,7 +3,9 @@
 [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-BezierMaker-green.svg?style=true)](https://android-arsenal.com/details/1/3852)    [![API](https://img.shields.io/badge/API-14%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=14)  
 
 通过de Casteljau算法绘制贝塞尔曲线，并计算它的切线，实现1-7阶贝塞尔曲线的形成动画。
-德卡斯特里奥算法可以计算出Bezier曲线上的一个点，进而绘制出Bezier曲线。想深入了解德卡斯特里奥算法的同学可以参考我翻译的一篇文章[《德卡斯特里奥算法——找到Bezier曲线上的一个点》](http://blog.csdn.net/venshine/article/details/51750906)。
+德卡斯特里奥算法可以计算出Bezier曲线上的一个点，进而绘制出Bezier曲线。想深入了解德卡斯特里奥算法的同学可以参考我翻译的一篇文章[《德卡斯特里奥算法——找到Bezier曲线上的一个点》](http://blog.csdn.net/venshine/article/details/51750906)。  
+
+[bezier.apk](/bezier.apk)
 
 Features
 --
