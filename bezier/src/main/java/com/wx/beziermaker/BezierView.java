@@ -304,8 +304,8 @@ public class BezierView extends View {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         if (mWidth == 0 || mHeight == 0) {
-            mWidth = getWidth();
-            mHeight = getHeight();
+            mWidth = getMeasuredWidth();
+            mHeight = getMeasuredHeight();
         }
     }
 
