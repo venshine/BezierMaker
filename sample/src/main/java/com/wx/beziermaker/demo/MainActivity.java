@@ -15,10 +15,10 @@
  */
 package com.wx.beziermaker.demo;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.CompoundButton;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -36,25 +36,27 @@ public class MainActivity extends AppCompatActivity {
 
     private BezierView mBezierView;
 
-    private SeekBar mSeekBar;
-
     private TextView mTextView;
 
-    private Switch mLoop, mTangent;
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(newBase);
+        ToastUtils.init(this);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mBezierView = (BezierView) findViewById(R.id.bezier);
-        mTextView = (TextView) findViewById(R.id.textview);
-        mSeekBar = (SeekBar) findViewById(R.id.seekbar);
-        mLoop = (Switch) findViewById(R.id.loop);
-        mTangent = (Switch) findViewById(R.id.tangent);
+        mBezierView = findViewById(R.id.bezier);
+        mTextView = findViewById(R.id.textview);
+        SeekBar seekBar = findViewById(R.id.seekbar);
+        Switch loop = findViewById(R.id.loop);
+        Switch tangent = findViewById(R.id.tangent);
 
-        mTextView.setText(mBezierView.getOrderStr() + "阶贝塞尔曲线");
+        mTextView.setText(String.format("%s阶贝塞尔曲线", mBezierView.getOrderStr()));
 
-        mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (progress == 0) {
@@ -65,29 +67,17 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-
             }
         });
 
-        mLoop.setChecked(false);
-        mTangent.setChecked(true);
-        mLoop.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                mBezierView.setLoop(isChecked);
-            }
-        });
-        mTangent.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                mBezierView.setTangent(isChecked);
-            }
-        });
+        loop.setChecked(false);
+        tangent.setChecked(true);
+        loop.setOnCheckedChangeListener((buttonView, isChecked) -> mBezierView.setLoop(isChecked));
+        tangent.setOnCheckedChangeListener((buttonView, isChecked) -> mBezierView.setTangent(isChecked));
     }
 
     public void start(View view) {
@@ -102,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void add(View view) {
         if (mBezierView.addPoint()) {
-            mTextView.setText(mBezierView.getOrderStr() + "阶贝塞尔曲线");
+            mTextView.setText(String.format("%s阶贝塞尔曲线", mBezierView.getOrderStr()));
             VibratorUtils.vibrate(this, 300);
         } else {
             ToastUtils.showToast("Add point failed.");
@@ -111,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void del(View view) {
         if (mBezierView.delPoint()) {
-            mTextView.setText(mBezierView.getOrderStr() + "阶贝塞尔曲线");
+            mTextView.setText(String.format("%s阶贝塞尔曲线", mBezierView.getOrderStr()));
             VibratorUtils.vibrate(this, 300);
         } else {
             ToastUtils.showToast("Delete point failed.");

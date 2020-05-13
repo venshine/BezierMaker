@@ -15,6 +15,7 @@
  */
 package com.wx.beziermaker;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -51,12 +52,28 @@ public class BezierView extends View {
     private static final int RATE = 10; // 移动速率
     private static final int HANDLER_WHAT = 100;
     private static final int FRAME = 1000;  // 1000帧
-    private static final String[] TANGENT_COLORS = {"#7fff00", "#7a67ee", "#ee82ee", "#ffd700", "#1c86ee",
-            "#8b8b00"};  // 切线颜色
+    private static final String[] TANGENT_COLORS = {
+            "#7fff00",
+            "#7a67ee",
+            "#ee82ee",
+            "#ffd700",
+            "#1c86ee",
+            "#8b8b00"
+    };  // 切线颜色
     private static final int STATE_READY = 0x0001;
     private static final int STATE_RUNNING = 0x0002;
     private static final int STATE_STOP = 0x0004;
     private static final int STATE_TOUCH = 0x0010;
+
+    private static final String[] ORDER_STRS = {
+            "一",
+            "二",
+            "三",
+            "四",
+            "五",
+            "六",
+            "七"
+    };
 
     private Path mBezierPath = null;    // 贝塞尔曲线路径
 
@@ -91,6 +108,7 @@ public class BezierView extends View {
 
     private PointF mCurPoint; // 当前移动的控制点
 
+    @SuppressLint("HandlerLeak")
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -241,10 +259,10 @@ public class BezierView extends View {
             for (int j = 0; j < order - i; j++) {
                 points = new ArrayList<>();
                 for (float t = 0; t <= 1; t += delta) {
-                    float p0x = 0;
-                    float p1x = 0;
-                    float p0y = 0;
-                    float p1y = 0;
+                    float p0x;
+                    float p1x;
+                    float p0y;
+                    float p1y;
                     int z = (int) (t * FRAME);
                     if (size > 0) {
                         p0x = allpoints.get(i - 1).get(j).get(z).x;
@@ -300,15 +318,6 @@ public class BezierView extends View {
         return (1 - t) * deCasteljauY(i - 1, j, t) + t * deCasteljauY(i - 1, j + 1, t);
     }
 
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        if (mWidth == 0 || mHeight == 0) {
-            mWidth = getMeasuredWidth();
-            mHeight = getMeasuredHeight();
-        }
-    }
-
     /**
      * 判断坐标是否在合法区域中
      *
@@ -325,7 +334,8 @@ public class BezierView extends View {
             if (mCurPoint != null && mCurPoint.equals(point)) { // 判断是否是当前控制点
                 continue;
             }
-            rectF.set(point.x - REGION_WIDTH, point.y - REGION_WIDTH, point.x + REGION_WIDTH, point.y + REGION_WIDTH);
+            rectF.set(point.x - REGION_WIDTH, point.y - REGION_WIDTH, point.x + REGION_WIDTH,
+                    point.y + REGION_WIDTH);
             if (rectF.contains(x, y)) {
                 return false;
             }
@@ -343,7 +353,8 @@ public class BezierView extends View {
     private PointF getLegalControlPoint(float x, float y) {
         RectF rectF = new RectF();
         for (PointF point : mControlPoints) {
-            rectF.set(point.x - REGION_WIDTH, point.y - REGION_WIDTH, point.x + REGION_WIDTH, point.y + REGION_WIDTH);
+            rectF.set(point.x - REGION_WIDTH, point.y - REGION_WIDTH, point.x + REGION_WIDTH,
+                    point.y + REGION_WIDTH);
             if (rectF.contains(x, y)) {
                 return point;
             }
@@ -361,15 +372,23 @@ public class BezierView extends View {
      */
     private boolean isLegalFingerRegion(float x, float y) {
         if (mCurPoint != null) {
-            RectF rectF = new RectF(mCurPoint.x - FINGER_RECT_SIZE / 2, mCurPoint.y - FINGER_RECT_SIZE / 2, mCurPoint
+            RectF rectF = new RectF(mCurPoint.x - (FINGER_RECT_SIZE >> 1),
+                    mCurPoint.y - (FINGER_RECT_SIZE >> 1), mCurPoint
                     .x +
-                    FINGER_RECT_SIZE / 2, mCurPoint.y +
-                    FINGER_RECT_SIZE / 2);
-            if (rectF.contains(x, y)) {
-                return true;
-            }
+                    (FINGER_RECT_SIZE >> 1), mCurPoint.y +
+                    (FINGER_RECT_SIZE >> 1));
+            return rectF.contains(x, y);
         }
         return false;
+    }
+
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
+        if (mWidth == 0 || mHeight == 0) {
+            mWidth = getWidth();
+            mHeight = getHeight();
+        }
     }
 
     @Override
@@ -387,16 +406,20 @@ public class BezierView extends View {
                 point = mControlPoints.get(i);
                 if (i > 0) {
                     // 控制点连线
-                    canvas.drawLine(mControlPoints.get(i - 1).x, mControlPoints.get(i - 1).y, point.x, point.y,
+                    canvas.drawLine(mControlPoints.get(i - 1).x, mControlPoints.get(i - 1).y,
+                            point.x, point.y,
                             mLinePaint);
                 }
                 // 控制点
                 canvas.drawCircle(point.x, point.y, CONTROL_RADIUS, mControlPaint);
                 // 控制点文本
-                canvas.drawText("p" + i, point.x + CONTROL_RADIUS * 2, point.y + CONTROL_RADIUS * 2, mTextPointPaint);
+                canvas.drawText("p" + i, point.x + CONTROL_RADIUS * 2,
+                        point.y + CONTROL_RADIUS * 2, mTextPointPaint);
                 // 控制点文本展示
-                canvas.drawText("p" + i + " ( " + new DecimalFormat("##0.0").format(point.x) + " , " + new DecimalFormat
-                        ("##0.0").format(point.y) + ") ", REGION_WIDTH, mHeight - (size - i) * TEXT_HEIGHT, mTextPaint);
+                canvas.drawText("p" + i + " ( " + new DecimalFormat("##0.0").format(point.x) + " " +
+                                ", " + new DecimalFormat
+                                ("##0.0").format(point.y) + ") ", REGION_WIDTH,
+                        mHeight - (size - i) * TEXT_HEIGHT, mTextPaint);
 
             }
 
@@ -409,10 +432,13 @@ public class BezierView extends View {
                     int tlen = tps.size();
                     for (int j = 0; j < tlen - 1; j++) {
                         mTangentPaint.setColor(Color.parseColor(TANGENT_COLORS[i]));
-                        canvas.drawLine(tps.get(j).x, tps.get(j).y, tps.get(j + 1).x, tps.get(j + 1).y,
+                        canvas.drawLine(tps.get(j).x, tps.get(j).y, tps.get(j + 1).x,
+                                tps.get(j + 1).y,
                                 mTangentPaint);
-                        canvas.drawCircle(tps.get(j).x, tps.get(j).y, CONTROL_RADIUS, mTangentPaint);
-                        canvas.drawCircle(tps.get(j + 1).x, tps.get(j + 1).y, CONTROL_RADIUS, mTangentPaint);
+                        canvas.drawCircle(tps.get(j).x, tps.get(j).y, CONTROL_RADIUS,
+                                mTangentPaint);
+                        canvas.drawCircle(tps.get(j + 1).x, tps.get(j + 1).y, CONTROL_RADIUS,
+                                mTangentPaint);
                     }
                 }
             }
@@ -423,8 +449,9 @@ public class BezierView extends View {
             // Bezier曲线起始移动点
             canvas.drawCircle(mBezierPoint.x, mBezierPoint.y, CONTROL_RADIUS, mMovingPaint);
             // 时间展示
-            canvas.drawText("t:" + (new DecimalFormat("##0.000").format((float) mR / FRAME)), mWidth - TEXT_HEIGHT *
-                    3, mHeight - TEXT_HEIGHT, mTextPaint);
+            canvas.drawText("t:" + (new DecimalFormat("##0.000").format((float) mR / FRAME)),
+                    mWidth - TEXT_HEIGHT *
+                            3, mHeight - TEXT_HEIGHT, mTextPaint);
 
             mHandler.removeMessages(HANDLER_WHAT);
             mHandler.sendEmptyMessage(HANDLER_WHAT);
@@ -436,13 +463,17 @@ public class BezierView extends View {
             for (int i = 0; i < size; i++) {
                 point = mControlPoints.get(i);
                 if (i > 0) {
-                    canvas.drawLine(mControlPoints.get(i - 1).x, mControlPoints.get(i - 1).y, point.x, point.y,
+                    canvas.drawLine(mControlPoints.get(i - 1).x, mControlPoints.get(i - 1).y,
+                            point.x, point.y,
                             mLinePaint);
                 }
                 canvas.drawCircle(point.x, point.y, CONTROL_RADIUS, mControlPaint);
-                canvas.drawText("p" + i, point.x + CONTROL_RADIUS * 2, point.y + CONTROL_RADIUS * 2, mTextPointPaint);
-                canvas.drawText("p" + i + " ( " + new DecimalFormat("##0.0").format(point.x) + " , " + new DecimalFormat
-                        ("##0.0").format(point.y) + ") ", REGION_WIDTH, mHeight - (size - i) * TEXT_HEIGHT, mTextPaint);
+                canvas.drawText("p" + i, point.x + CONTROL_RADIUS * 2,
+                        point.y + CONTROL_RADIUS * 2, mTextPointPaint);
+                canvas.drawText("p" + i + " ( " + new DecimalFormat("##0.0").format(point.x) + " " +
+                                ", " + new DecimalFormat
+                                ("##0.0").format(point.y) + ") ", REGION_WIDTH,
+                        mHeight - (size - i) * TEXT_HEIGHT, mTextPaint);
             }
         }
     }
@@ -538,10 +569,83 @@ public class BezierView extends View {
             float x = mControlPoints.get(size - 1).x;
             float y = mControlPoints.get(size - 1).y;
             int r = mWidth / 5;
-            float[][] region = {{0, r}, {0, -r}, {r, r}, {-r, -r}, {r, 0}, {-r, 0}, {0, 1.5f * r}, {0, -1.5f * r}, {1.5f
-                    * r, 1.5f *
-                    r}, {-1.5f * r, -1.5f * r}, {1.5f * r, 0}, {-1.5f * r, 0}, {0, 2 * r}, {0, -2 * r}, {2 * r, 2 *
-                    r}, {-2 * r, -2 * r}, {2 * r, 0}, {-2 * r, 0}};
+            float[][] region = {
+                    {
+                            0,
+                            r
+                    },
+                    {
+                            0,
+                            -r
+                    },
+                    {
+                            r,
+                            r
+                    },
+                    {
+                            -r,
+                            -r
+                    },
+                    {
+                            r,
+                            0
+                    },
+                    {
+                            -r,
+                            0
+                    },
+                    {
+                            0,
+                            1.5f * r
+                    },
+                    {
+                            0,
+                            -1.5f * r
+                    },
+                    {
+                            1.5f
+                                    * r,
+                            1.5f *
+                                    r
+                    },
+                    {
+                            -1.5f * r,
+                            -1.5f * r
+                    },
+                    {
+                            1.5f * r,
+                            0
+                    },
+                    {
+                            -1.5f * r,
+                            0
+                    },
+                    {
+                            0,
+                            2 * r
+                    },
+                    {
+                            0,
+                            -2 * r
+                    },
+                    {
+                            2 * r,
+                            2 *
+                                    r
+                    },
+                    {
+                            -2 * r,
+                            -2 * r
+                    },
+                    {
+                            2 * r,
+                            0
+                    },
+                    {
+                            -2 * r,
+                            0
+                    }
+            };
             int t = 0;
             int len = region.length;
             while (true) {  // 随机赋值
@@ -560,9 +664,9 @@ public class BezierView extends View {
                 }
             }
             if (t == 0) {   // 超出region长度而未赋值时，循环赋值
-                for (int i = 0; i < len; i++) {
-                    float px = x + region[i][0];
-                    float py = y + region[i][1];
+                for (float[] floats : region) {
+                    float px = x + floats[0];
+                    float py = y + floats[1];
                     if (isLegalTouchRegion(px, py)) {
                         mControlPoints.add(new PointF(px, py));
                         invalidate();
@@ -628,33 +732,7 @@ public class BezierView extends View {
      * @return
      */
     public String getOrderStr() {
-        String str = "";
-        switch (getOrder()) {
-            case 1:
-                str = "一";
-                break;
-            case 2:
-                str = "二";
-                break;
-            case 3:
-                str = "三";
-                break;
-            case 4:
-                str = "四";
-                break;
-            case 5:
-                str = "五";
-                break;
-            case 6:
-                str = "六";
-                break;
-            case 7:
-                str = "七";
-                break;
-            default:
-                break;
-        }
-        return str;
+        return ORDER_STRS[getOrder() - 1];
     }
 
     /**
