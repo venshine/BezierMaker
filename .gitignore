@@ -41,7 +41,6 @@ build-log.xml
 ### Gradle ###
 build/
 .gradle
-gradle.properties
 
 # Ignore Gradle GUI config
 gradle-app.setting
