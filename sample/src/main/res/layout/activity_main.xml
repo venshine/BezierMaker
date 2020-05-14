@@ -1,129 +1,119 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white">
 
-    <LinearLayout
-        android:id="@+id/control_panel"
-        android:layout_width="match_parent"
+    <Button
+        android:id="@+id/add"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:orientation="vertical">
+        android:backgroundTint="@color/colorPrimary"
+        android:onClick="add"
+        android:text="add"
+        android:textColor="@android:color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/del" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+    <Button
+        android:id="@+id/del"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/colorPrimary"
+        android:onClick="del"
+        android:text="del"
+        android:textColor="@android:color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/add"
+        app:layout_constraintRight_toLeftOf="@id/start" />
 
-            <LinearLayout
-                android:id="@+id/control_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="right"
-                android:orientation="horizontal">
+    <Button
+        android:id="@+id/start"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/colorPrimary"
+        android:onClick="start"
+        android:text="start"
+        android:textColor="@android:color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/del"
+        app:layout_constraintRight_toLeftOf="@id/stop" />
 
-                <Switch
-                    android:id="@+id/loop"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text=" Loop "
-                    android:textColor="@color/colorAccent"/>
+    <Button
+        android:id="@+id/stop"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/colorPrimary"
+        android:onClick="stop"
+        android:text="stop"
+        android:textColor="@android:color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/start"
+        app:layout_constraintRight_toRightOf="parent" />
 
-                <Switch
-                    android:id="@+id/tangent"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:text=" Tangent "
-                    android:textColor="@color/colorAccent"/>
+    <TextView
+        android:id="@+id/rate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:gravity="center_vertical"
+        android:text="Rate"
+        android:textColor="@color/colorAccent"
+        app:layout_constraintBottom_toTopOf="@id/add"
+        app:layout_constraintLeft_toLeftOf="parent" />
 
-            </LinearLayout>
+    <SeekBar
+        android:id="@+id/seekbar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:max="10"
+        android:progress="5"
+        app:layout_constraintBottom_toTopOf="@id/add"
+        app:layout_constraintLeft_toRightOf="@id/rate"
+        app:layout_constraintRight_toRightOf="parent" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_above="@id/control_layout"
-                android:orientation="horizontal">
+    <Switch
+        android:id="@+id/loop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=" Loop "
+        android:textColor="@color/colorAccent"
+        app:layout_constraintBottom_toTopOf="@id/seekbar"
+        app:layout_constraintRight_toLeftOf="@id/tangent" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="16dp"
-                    android:gravity="center_vertical"
-                    android:text="Rate"
-                    android:textColor="@color/colorAccent"/>
-
-                <SeekBar
-                    android:id="@+id/seekbar"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:max="10"
-                    android:progress="5"/>
-            </LinearLayout>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/add"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:backgroundTint="@color/colorPrimary"
-                android:onClick="add"
-                android:text="add"
-                android:textColor="@android:color/white"/>
-
-            <Button
-                android:id="@+id/del"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:backgroundTint="@color/colorPrimary"
-                android:onClick="del"
-                android:text="del"
-                android:textColor="@android:color/white"/>
-
-            <Button
-                android:id="@+id/start"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:backgroundTint="@color/colorPrimary"
-                android:onClick="start"
-                android:text="start"
-                android:textColor="@android:color/white"/>
-
-            <Button
-                android:id="@+id/stop"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:backgroundTint="@color/colorPrimary"
-                android:onClick="stop"
-                android:text="stop"
-                android:textColor="@android:color/white"/>
-        </LinearLayout>
-    </LinearLayout>
+    <Switch
+        android:id="@+id/tangent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="20dp"
+        android:text=" Tangent "
+        android:textColor="@color/colorAccent"
+        app:layout_constraintBottom_toTopOf="@id/seekbar"
+        app:layout_constraintRight_toRightOf="parent" />
 
     <TextView
         android:id="@+id/textview"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
         android:textColor="#111111"
-        android:textStyle="bold"/>
+        android:textStyle="bold"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <com.wx.beziermaker.BezierView
         android:id="@+id/bezier"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@id/control_panel"/>
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/tangent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textview" />
 
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

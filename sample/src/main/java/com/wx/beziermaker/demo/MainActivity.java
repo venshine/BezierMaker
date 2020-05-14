@@ -17,11 +17,12 @@ package com.wx.beziermaker.demo;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.wx.android.common.util.ToastUtils;
 import com.wx.android.common.util.VibratorUtils;
@@ -50,11 +51,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         mBezierView = findViewById(R.id.bezier);
         mTextView = findViewById(R.id.textview);
+        mTextView.setText(String.format("%s阶贝塞尔曲线", mBezierView.getOrderStr()));
+
         SeekBar seekBar = findViewById(R.id.seekbar);
         Switch loop = findViewById(R.id.loop);
         Switch tangent = findViewById(R.id.tangent);
-
-        mTextView.setText(String.format("%s阶贝塞尔曲线", mBezierView.getOrderStr()));
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
