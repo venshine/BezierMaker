@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">贝塞尔曲线</string>
+    <string name="order_format">%s阶贝塞尔曲线</string>
 </resources>

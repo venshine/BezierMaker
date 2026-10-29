@@ -1,31 +1,32 @@
-apply plugin: 'com.android.application'
+plugins {
+    id 'com.android.application'
+}
 
 android {
-    compileSdkVersion 29
+    namespace = 'com.wx.beziermaker.demo'
+    compileSdk = 36
 
     defaultConfig {
-        applicationId "com.wx.beziermaker.demo"
-        minSdkVersion 14
-        targetSdkVersion 29
-        versionCode 1
-        versionName "1.0"
+        applicationId = 'com.wx.beziermaker.demo'
+        minSdk = 23
+        targetSdk = 36
+        versionCode = 1
+        versionName = '1.0'
     }
     buildTypes {
         release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            minifyEnabled = false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.wx.android.common:common:1.0.1'
-    implementation "androidx.constraintlayout:constraintlayout:1.1.3"
-    implementation "androidx.appcompat:appcompat:1.1.0"
-    implementation project (':bezier')
+    implementation 'androidx.appcompat:appcompat:1.8.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.2.2'
+    implementation project(':bezier')
 }

@@ -1,0 +1,3 @@
+# JitPack 构建环境：AGP 9 需要 JDK 17 及以上
+jdk:
+  - openjdk17

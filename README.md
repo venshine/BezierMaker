@@ -27,6 +27,24 @@ ScreenShot
 <img src="/screenshot/5.gif" width="33.3%"><img src="/screenshot/6.gif" width="33.3%"><img src="/screenshot/7.gif" width="33.3%">
 <br/>
 
+Usage
+--
+##### Gradle:
+1. 在 `settings.gradle` 中添加 JitPack 仓库：
+```groovy
+dependencyResolutionManagement {
+    repositories {
+        google()
+        mavenCentral()
+        maven { url = 'https://jitpack.io' }
+    }
+}
+```
+2. 在模块的 `build.gradle` 中添加依赖：
+```groovy
+implementation 'com.github.venshine:BezierMaker:1.0.0'
+```
+
 Demo
 --
 

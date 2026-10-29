@@ -62,3 +62,8 @@ gradle-app.setting
 /captures
 .externalNativeBuild
 .cxx
+
+# 私有内容与临时文件
+.private/
+.tmp/
+.kotlin/
