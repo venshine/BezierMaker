@@ -1,0 +1,11 @@
+version: 2
+updates:
+  # 每月检查工作流用到的 GitHub Actions，有新版本时合并成一个 PR
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      actions:
+        patterns:
+          - "*"
