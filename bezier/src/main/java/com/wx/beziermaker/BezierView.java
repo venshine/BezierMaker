@@ -26,6 +26,7 @@ import android.graphics.RectF;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -326,7 +327,7 @@ public class BezierView extends View {
      * @return
      */
     private boolean isLegalTouchRegion(float x, float y) {
-        if (x <= REGION_WIDTH || x >= mWidth - REGION_WIDTH || y <= REGION_WIDTH || y >= mHeight - REGION_WIDTH) {
+        if (x <= REGION_WIDTH || x >= getAreaWidth() - REGION_WIDTH || y <= REGION_WIDTH || y >= getAreaHeight() - REGION_WIDTH) {
             return false;
         }
         RectF rectF = new RectF();
@@ -341,6 +342,29 @@ public class BezierView extends View {
             }
         }
         return true;
+    }
+
+    /**
+     * 控制点可用区域的宽度
+     */
+    private int getAreaWidth() {
+        return mWidth != 0 ? mWidth : getEstimatedAreaSize();
+    }
+
+    /**
+     * 控制点可用区域的高度
+     */
+    private int getAreaHeight() {
+        return mHeight != 0 ? mHeight : getEstimatedAreaSize();
+    }
+
+    /**
+     * 布局前控件宽高为 0，按屏幕短边围成的正方形估算可用区域：初始控制点也在这个范围内，
+     * 且控件通常不小于它，避免布局前（如 onCreate 中）添加的控制点落到控件之外
+     */
+    private int getEstimatedAreaSize() {
+        DisplayMetrics metrics = getResources().getDisplayMetrics();
+        return Math.min(metrics.widthPixels, metrics.heightPixels);
     }
 
     /**
@@ -568,7 +592,7 @@ public class BezierView extends View {
             }
             float x = mControlPoints.get(size - 1).x;
             float y = mControlPoints.get(size - 1).y;
-            int r = mWidth / 5;
+            int r = getAreaWidth() / 5;
             float[][] region = {
                     {
                             0,
@@ -674,7 +698,8 @@ public class BezierView extends View {
                     }
                 }
             }
-            return true;
+            // 所有候选位置都不合法时没有加上控制点，如实返回 false
+            return mControlPoints.size() > size;
         }
         return false;
     }
