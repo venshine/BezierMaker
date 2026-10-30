@@ -23,6 +23,9 @@ import android.widget.SeekBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import com.wx.beziermaker.BezierView
 
 /**
@@ -39,6 +42,14 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        // targetSdk 35 起，Android 15+ 强制全面屏，内容需要避开状态栏和导航栏
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content)) { view, insets ->
+            val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+            view.setPadding(bars.left, bars.top, bars.right, bars.bottom)
+            insets
+        }
+        // 浅色背景上使用深色状态栏图标
+        WindowCompat.getInsetsController(window, window.decorView).isAppearanceLightStatusBars = true
         bezierView = findViewById(R.id.bezier)
         textView = findViewById(R.id.textview)
         updateOrderText()
