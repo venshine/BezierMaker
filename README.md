@@ -1,22 +1,24 @@
 # BezierMaker  
 
+English | [简体中文](README-CN.md)
+
 [![JitPack](https://jitpack.io/v/venshine/BezierMaker.svg)](https://jitpack.io/#venshine/BezierMaker)  [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-BezierMaker-green.svg?style=true)](https://android-arsenal.com/details/1/3852)    [![API](https://img.shields.io/badge/API-14%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=14)  
 
-通过de Casteljau算法绘制贝塞尔曲线，并计算它的切线，实现1-7阶贝塞尔曲线的形成动画。
-德卡斯特里奥算法可以计算出Bezier曲线上的一个点，进而绘制出Bezier曲线。想深入了解德卡斯特里奥算法的同学可以参考我翻译的一篇文章[《德卡斯特里奥算法——找到Bezier曲线上的一个点》](http://blog.csdn.net/venshine/article/details/51750906)。  
+Draws Bézier curves with the de Casteljau algorithm, computes their tangents, and animates how Bézier curves of order 1 to 7 are formed.
+The de Casteljau algorithm computes a point on a Bézier curve, from which the whole curve can be drawn. To learn more about it, see my Chinese translation [De Casteljau's Algorithm: Finding a Point on a Bézier Curve](http://blog.csdn.net/venshine/article/details/51750906).  
 
 [**bezier.apk**](/bezier.apk)
 
 Features
 --
-* 支持增加和删除控制点
-* 支持1阶到7阶贝塞尔曲线，限于屏幕大小，理论上可以支持N阶贝塞尔曲线
-* 支持自由移动控制点
-* 支持显示贝塞尔曲线形成过程的切线
-* 支持循环显示贝塞尔曲线的形成动画
-* 支持贝塞尔曲线显示速率
-* 支持显示控制点坐标
-* 支持设置贝塞尔曲线阶数
+* Add and remove control points
+* Bézier curves of order 1 to 7 (limited by screen size; order N is supported in theory)
+* Drag control points freely
+* Show the tangents while the curve is being formed
+* Loop the forming animation
+* Adjust the animation rate
+* Show control point coordinates
+* Set the order of the curve
 
 ScreenShot
 --
@@ -30,7 +32,7 @@ ScreenShot
 Usage
 --
 ##### Gradle:
-1. 在 `settings.gradle` 中添加 JitPack 仓库：
+1. Add the JitPack repository to `settings.gradle`:
 ```groovy
 dependencyResolutionManagement {
     repositories {
@@ -40,7 +42,7 @@ dependencyResolutionManagement {
     }
 }
 ```
-2. 在模块的 `build.gradle` 中添加依赖：
+2. Add the dependency to your module's `build.gradle`:
 ```groovy
 implementation 'com.github.venshine:BezierMaker:2.0.0'
 ```
@@ -62,7 +64,7 @@ implementation("com.github.venshine:BezierMaker:2.0.0")
 
 Demo
 --
-库本身用 Java 编写，Java 和 Kotlin 都可以直接调用，不会给项目额外引入 Kotlin 依赖。
+The library is written in Java and can be called directly from both Java and Kotlin. It adds no Kotlin dependency to your project.
 
 ##### XML:
 ```xml
@@ -82,9 +84,9 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         bezierView = findViewById(R.id.bezier)
-        bezierView.setRate(10) // 移动速率
-        bezierView.setTangent(true) // 显示切线
-        bezierView.setLoop(true) // 循环播放
+        bezierView.setRate(10) // animation rate
+        bezierView.setTangent(true) // show tangents
+        bezierView.setLoop(true) // loop the animation
     }
 
     fun start(view: View) = bezierView.start()
@@ -92,7 +94,7 @@ class MainActivity : AppCompatActivity() {
     fun stop(view: View) = bezierView.stop()
 
     fun add(view: View) {
-        bezierView.addPoint() // 增加控制点，返回 false 表示已达上限
+        bezierView.addPoint() // add a control point; returns false when the maximum is reached
     }
 
     fun del(view: View) {
@@ -135,23 +137,23 @@ public class MainActivity extends Activity {
 ```
 
 ##### Methods:
-| method 方法          | description 描述 |
+| method          | description |
 |:---				 |:---|
-| void **start**()  	     | 开始贝塞尔曲线（required） |
-| void **stop**()	     | 停止贝塞尔曲线（optional） |
-| boolean **addPoint**() 	     | 增加控制点（optional） |
-| boolean **delPoint**() 	     | 删除控制点（optional） |
-| int **getOrder**() 	     | 获取贝塞尔曲线阶数（optional） |
-| void **setRate**(int rate) 	     | 设置移动速率（optional） |
-| void **setTangent**(boolean tangent)  	     | 设置是否显示切线（optional） |
-| void **setLoop**(boolean loop)  	     | 设置是否循环（optional） |
-| void **setOrder**(int order)  	     | 设置贝塞尔曲线阶数（optional） |
+| void **start**()  	     | Start the animation (required) |
+| void **stop**()	     | Stop the animation (optional) |
+| boolean **addPoint**() 	     | Add a control point (optional) |
+| boolean **delPoint**() 	     | Remove a control point (optional) |
+| int **getOrder**() 	     | Get the order of the curve (optional) |
+| void **setRate**(int rate) 	     | Set the animation rate (optional) |
+| void **setTangent**(boolean tangent)  	     | Show or hide tangents (optional) |
+| void **setLoop**(boolean loop)  	     | Loop the animation or not (optional) |
+| void **setOrder**(int order)  	     | Set the order of the curve (optional) |
 
 
 About
 --
-* [Android 绘制N阶Bezier曲线](http://blog.csdn.net/venshine/article/details/51758841)
-* Email：venshine.cn@gmail.com
+* [Drawing N-order Bézier curves on Android (in Chinese)](http://blog.csdn.net/venshine/article/details/51758841)
+* Email: venshine.cn@gmail.com
 
 License
 --
