@@ -45,40 +45,93 @@ dependencyResolutionManagement {
 implementation 'com.github.venshine:BezierMaker:2.0.0'
 ```
 
+##### Gradle Kotlin DSL:
+```kotlin
+// settings.gradle.kts
+dependencyResolutionManagement {
+    repositories {
+        google()
+        mavenCentral()
+        maven("https://jitpack.io")
+    }
+}
+
+// build.gradle.kts
+implementation("com.github.venshine:BezierMaker:2.0.0")
+```
+
 Demo
 --
+库本身用 Java 编写，Java 和 Kotlin 都可以直接调用，不会给项目额外引入 Kotlin 依赖。
+
+##### XML:
+```xml
+<com.wx.beziermaker.BezierView
+    android:id="@+id/bezier"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" />
+```
+
+##### Kotlin:
+```kotlin
+class MainActivity : AppCompatActivity() {
+    private lateinit var bezierView: BezierView
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        bezierView = findViewById(R.id.bezier)
+        bezierView.setRate(10) // 移动速率
+        bezierView.setTangent(true) // 显示切线
+        bezierView.setLoop(true) // 循环播放
+    }
+
+    fun start(view: View) = bezierView.start()
+
+    fun stop(view: View) = bezierView.stop()
+
+    fun add(view: View) {
+        bezierView.addPoint() // 增加控制点，返回 false 表示已达上限
+    }
+
+    fun del(view: View) {
+        bezierView.delPoint()
+    }
+}
+```
 
 ##### Java:
 ```Java
-    public class MainActivity extends Activity {
+public class MainActivity extends Activity {
 
-        BezierView mBezierView
+    BezierView mBezierView;
 
-        @Override
-        protected void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            setContentView(R.layout.activity_main)
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
-            mBezierView = (BezierView) findViewById(R.id.bezier);
-        }
-
-        public void start(View view) {
-            mBezierView.start();
-        }
-
-        public void stop(View view) {
-            mBezierView.stop();
-        }
-
-        public void add(View view) {
-            mBezierView.addPoint();
-        }
-
-        public void del(View view) {
-            mBezierView.delPoint();
-        }
-
+        mBezierView = findViewById(R.id.bezier);
     }
+
+    public void start(View view) {
+        mBezierView.start();
+    }
+
+    public void stop(View view) {
+        mBezierView.stop();
+    }
+
+    public void add(View view) {
+        mBezierView.addPoint();
+    }
+
+    public void del(View view) {
+        mBezierView.delPoint();
+    }
+
+}
 ```
 
 ##### Methods:
