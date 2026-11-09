@@ -76,9 +76,13 @@ public class BezierViewTest {
     }
 
     private static boolean hasRed(Bitmap bitmap) {
+        return hasColor(bitmap, Color.RED);
+    }
+
+    private static boolean hasColor(Bitmap bitmap, int color) {
         for (int x = 0; x < bitmap.getWidth(); x += 2) {
             for (int y = 0; y < bitmap.getHeight(); y += 2) {
-                if (bitmap.getPixel(x, y) == Color.RED) {
+                if (bitmap.getPixel(x, y) == color) {
                     return true;
                 }
             }
@@ -217,6 +221,41 @@ public class BezierViewTest {
         for (PointF p : controlPoints()) {
             assertTrue(p.toString(), p.x > 0 && p.x < size && p.y > 0 && p.y < size);
         }
+    }
+
+    // 布局前按屏幕短边估算位置，控件比估算区域小时控制点会落到控件外；首次布局后应全部移回可拖动区域
+    @Test
+    public void pointsAddedBeforeLayoutMoveInsideView() throws Exception {
+        view.setOrder(7);
+        assertEquals(7, view.getOrder());
+
+        // 比 Robolectric 默认屏幕短边（320px）小，初始控制点 (2w/3, w/4) 就在控件外
+        int width = 200;
+        int height = 240;
+        view.measure(View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(height, View.MeasureSpec.EXACTLY));
+        view.layout(0, 0, width, height);
+
+        assertEquals(7, view.getOrder());
+        // 30 是 BezierView.REGION_WIDTH：离边缘不足 30px 的位置不能拖入
+        for (PointF p : controlPoints()) {
+            assertTrue(p.toString(), p.x > 30 && p.x < width - 30 && p.y > 30 && p.y < height - 30);
+        }
+    }
+
+    // 关闭切线时开始播放，播放中再打开切线：旧实现切线点集为 null，下一帧崩溃
+    @Test
+    public void enablingTangentWhileRunningDrawsTangent() {
+        layout();
+        view.setTangent(false);
+        view.start();
+        drawFrame();
+        drawFrame();
+
+        view.setTangent(true);
+        drawFrame();
+        // 第 1 层切线颜色，对应 TANGENT_COLORS[0]
+        assertTrue(hasColor(drawFrame(), Color.parseColor("#7fff00")));
     }
 
     // 控件太小、找不到合法位置时 addPoint 应返回 false，旧实现总是返回 true

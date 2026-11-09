@@ -360,7 +360,7 @@ public class BezierView extends View {
 
     /**
      * 布局前控件宽高为 0，按屏幕短边围成的正方形估算可用区域：初始控制点也在这个范围内，
-     * 且控件通常不小于它，避免布局前（如 onCreate 中）添加的控制点落到控件之外
+     * 控件比它小时（如放在带边距的卡片里），超出的控制点在首次布局时由 keepPointsInside 移回控件内
      */
     private int getEstimatedAreaSize() {
         DisplayMetrics metrics = getResources().getDisplayMetrics();
@@ -412,7 +412,33 @@ public class BezierView extends View {
         if (mWidth == 0 || mHeight == 0) {
             mWidth = getWidth();
             mHeight = getHeight();
+            if (mWidth > 0 && mHeight > 0) {
+                keepPointsInside();
+            }
         }
+    }
+
+    /**
+     * 布局前的控制点（初始点和布局前添加的点）按屏幕短边估算位置，控件比它小时会落到控件外；
+     * 首次拿到真实宽高后把它们移回可拖动区域
+     */
+    private void keepPointsInside() {
+        for (PointF point : mControlPoints) {
+            point.x = clampToArea(point.x, mWidth);
+            point.y = clampToArea(point.y, mHeight);
+        }
+    }
+
+    /**
+     * 限制在离边缘超过 REGION_WIDTH 的范围内，与 isLegalTouchRegion 一致；控件太小放不下时居中
+     */
+    private static float clampToArea(float value, int size) {
+        float min = REGION_WIDTH + 1;
+        float max = size - REGION_WIDTH - 1;
+        if (min > max) {
+            return size / 2f;
+        }
+        return Math.max(min, Math.min(max, value));
     }
 
     @Override
@@ -557,9 +583,8 @@ public class BezierView extends View {
             mBezierPoint = null;
             mInstantTangentPoints = null;
             mBezierPoints = buildBezierPoints();
-            if (mTangent) {
-                mTangentPoints = buildTangentPoints();
-            }
+            // 不管当前是否显示切线都生成：播放中可能再打开切线，按需生成会读到 null 或上一次的旧点集
+            mTangentPoints = buildTangentPoints();
             mState &= ~STATE_READY;
             mState &= ~STATE_TOUCH;
             mState |= STATE_RUNNING;
