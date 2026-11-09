@@ -1,4 +1,84 @@
 <resources>
-    <string name="app_name">贝塞尔曲线</string>
+    <string name="app_name">BezierMaker</string>
+
+    <string name="back">返回</string>
+    <string name="theme_to_dark">切换到深色</string>
+    <string name="theme_to_light">切换到浅色</string>
+    <string name="view_source">查看源码</string>
+    <string name="copied">已复制</string>
+
+    <!-- 首页 -->
+    <string name="home_eyebrow">ANDROID · BÉZIER CURVE</string>
+    <string name="home_title">看一条曲线，\n是怎样被画出来的</string>
+    <string name="home_desc">用 de Casteljau 算法逐层插值，把 1 到 7 阶贝塞尔曲线的生成过程画成动画：控制点可拖动，切线逐层显示。</string>
+    <string name="home_preview">实时预览 · 循环播放</string>
+    <string name="home_next_order">换一阶</string>
+    <string name="home_points_format">%d 个控制点</string>
+    <string name="home_examples">示例</string>
+    <string name="home_examples_hint">3 个页面，均可交互</string>
+    <string name="home_install">接入</string>
+    <string name="home_install_hint">JitPack · 纯 Java</string>
+    <string name="home_copy_dependency">复制依赖</string>
+    <string name="home_copied_dependency">已复制到剪贴板</string>
+    <string name="home_license">Apache License 2.0</string>
+    <string name="home_author">© venshine</string>
+
+    <string name="demo_playground">画板</string>
+    <string name="demo_playground_desc">增删控制点、拖动、调速、切线与循环，一屏玩全</string>
+    <string name="demo_algorithm">原理拆解</string>
+    <string name="demo_algorithm_desc">de Casteljau 逐层插值，每层一种颜色</string>
+    <string name="demo_api">方法速查</string>
+    <string name="demo_api_desc">全部公开方法与调用示例</string>
+
+    <!-- 通用 -->
     <string name="order_format">%s阶贝塞尔曲线</string>
+    <string name="order_chip_format">Order %d</string>
+    <string name="order">阶数</string>
+    <string name="tangent">切线</string>
+    <string name="loop">循环</string>
+
+    <!-- 画板 -->
+    <string name="pg_hint">停止状态下可拖动控制点</string>
+    <string name="pg_rate">速率</string>
+    <string name="pg_rate_format">%1$d · %2$d 帧</string>
+    <string name="pg_add">加点</string>
+    <string name="pg_del">删点</string>
+    <string name="pg_play">播放</string>
+    <string name="pg_stop">停止</string>
+    <string name="pg_status_order">已切换为%s阶 · 共 %d 个控制点</string>
+    <string name="pg_status_no_room">附近空位不够，只加到了%s阶</string>
+    <string name="pg_status_added">已添加 P%d</string>
+    <string name="pg_status_deleted">已删除 P%d</string>
+    <string name="pg_status_max">已到 7 阶上限</string>
+    <string name="pg_status_min">一阶至少要 2 个控制点</string>
+    <string name="pg_status_busy">播放中不能删点，先停止</string>
+    <string name="pg_status_add_failed">没加上：播放中请先停止，或拖开控制点腾出空位</string>
+    <string name="pg_status_play_loop">循环播放中 · 停止后可拖动控制点</string>
+    <string name="pg_status_play_once">播放一遍 · 播完可拖动控制点</string>
+    <string name="pg_status_stopped">已停止 · 可拖动控制点</string>
+    <string name="pg_status_tangent_on">已显示切线</string>
+    <string name="pg_status_tangent_off">已隐藏切线</string>
+    <string name="pg_status_loop_on">已开启循环</string>
+    <string name="pg_status_loop_off">已关闭循环 · 本遍播完即停</string>
+
+    <!-- 原理 -->
+    <string name="algo_intro">在参数 t 处，相邻两个控制点按 (1 − t) : t 线性插值得到一个新点；对新点重复这一步，每层少一个点，n 阶曲线插值 n 次后只剩一个点，它就是曲线上的 B(t)。t 从 0 走到 1，B(t) 的轨迹就是整条曲线。</string>
+    <string name="algo_canvas">t 从 0 到 1 · 放慢播放</string>
+    <string name="algo_legend">图例</string>
+    <string name="algo_polygon">控制多边形</string>
+    <string name="algo_polygon_desc">P0 … P%d，共 %d 个点</string>
+    <string name="algo_level_format">第 %d 层插值</string>
+    <string name="algo_level_desc">%d 个点，%d 条线段</string>
+    <string name="algo_point">曲线上的点 B(t)</string>
+    <string name="algo_point_desc">最后一层只剩 1 个点</string>
+    <string name="algo_curve">已画出的轨迹</string>
+    <string name="algo_curve_desc">B(t) 走过的路径</string>
+    <string name="algo_formula">递推公式</string>
+
+    <!-- 方法速查 -->
+    <string name="api_methods">公开方法</string>
+    <string name="api_usage">用法</string>
+    <string name="api_required">必需</string>
+    <string name="api_optional">可选</string>
+    <string name="api_copy">复制</string>
 </resources>

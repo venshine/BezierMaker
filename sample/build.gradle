@@ -23,10 +23,16 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+    testOptions {
+        unitTests.includeAndroidResources = true
+    }
 }
 
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.8.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.2.2'
     implementation project(':bezier')
+
+    // 示例页冒烟测试，与 bezier 模块的测试依赖保持同一版本
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.robolectric:robolectric:4.17'
 }

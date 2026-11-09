@@ -1,6 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- 浅色主题色板；深色版本在 values-night/colors.xml，两边的颜色名必须一一对应 -->
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="bg">#F4F2EE</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="border">#E4DFD6</color>
+    <color name="line">#D9D3C8</color>
+    <color name="text">#16181D</color>
+    <color name="text_muted">#5C6370</color>
+    <color name="text_dim">#646B77</color>
+    <color name="text_sub">#3A3F48</color>
+    <color name="code_bg">#FBFAF7</color>
+    <color name="code_border">#E4DFD6</color>
+    <color name="code_text">#24292F</color>
+    <color name="code_comment">#646B77</color>
+    <color name="code_string">#2F7D4F</color>
+    <color name="seg_bg">#EFECE6</color>
+    <color name="seg_on">#FFFFFF</color>
+    <!-- 强调色取曲线的红色系，白字在上面的对比度不低于 4.5 -->
+    <color name="accent">#D63A3F</color>
+    <!-- 强调色用作文字时的颜色：浅色背景上加深，保证对比度 -->
+    <color name="accent_ink">#B42318</color>
+    <color name="accent_soft">#1FD63A3F</color>
+    <color name="on_accent">#FFFFFF</color>
+    <color name="ripple">#1416181D</color>
+    <!--
+      画布：BezierView 的控制点、文字固定画成黑色和灰色，不随主题变化，
+      所以画布在深色模式下也保持浅色纸面，只把亮度压低一点
+    -->
+    <color name="canvas">#FFFFFF</color>
+    <color name="canvas_border">#E4DFD6</color>
+    <color name="canvas_grid">#E9E5DD</color>
 </resources>

@@ -22,12 +22,17 @@ Features
 
 ScreenShot
 --
-<img src="/screenshot/1.gif" width="33.3%"><img src="/screenshot/8.gif" width="33.3%">
-<br/>
-<img src="/screenshot/2.gif" width="33.3%"><img src="/screenshot/3.gif" width="33.3%"><img src="/screenshot/4.gif" width="33.3%">
-<br/>
-<img src="/screenshot/5.gif" width="33.3%"><img src="/screenshot/6.gif" width="33.3%"><img src="/screenshot/7.gif" width="33.3%">
-<br/>
+<img src="screenshot/demo.gif" width="300" alt="BezierMaker 演示" />
+
+| 首页 | 深色模式 | 画板 |
+|:---:|:---:|:---:|
+| <img src="screenshot/home.png" width="200" /> | <img src="screenshot/home_dark.png" width="200" /> | <img src="screenshot/playground.png" width="200" /> |
+
+| 原理拆解 | 方法速查 |
+|:---:|:---:|
+| <img src="screenshot/algorithm.png" width="200" /> | <img src="screenshot/api.png" width="200" /> |
+
+[示例 App](sample) 演示了上面的全部功能，支持浅色和深色主题。
 
 Usage
 --
@@ -154,6 +159,14 @@ About
 --
 * [Android 绘制N阶Bezier曲线](http://blog.csdn.net/venshine/article/details/51758841)
 * Email：venshine.cn@gmail.com
+
+Credits
+--
+示例 App 打包了以下字体，均为 [SIL Open Font License 1.1](https://openfontlicense.org) 协议（协议原文见 [`sample/licenses/`](sample/licenses)）：
+* [Space Grotesk](https://github.com/floriankarsten/space-grotesk)：Copyright 2020 The Space Grotesk Project Authors
+* [JetBrains Mono](https://github.com/JetBrains/JetBrainsMono)：Copyright 2020 The JetBrains Mono Project Authors
+
+库本身不包含任何字体。
 
 License
 --

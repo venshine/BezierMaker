@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  画板不放在 ScrollView 里：BezierView 拖动控制点时不会请求父布局放行触摸，
+  外层可滚动时竖向拖动会被滚动抢走
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingStart="@dimen/page_padding"
+    android:paddingTop="16dp"
+    android:paddingEnd="@dimen/page_padding"
+    android:paddingBottom="16dp">
+
+    <include layout="@layout/include_toolbar" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="4dp"
+        android:paddingEnd="2dp">
+
+        <TextView
+            android:id="@+id/order_text"
+            style="@style/Text.Numeric"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="17sp" />
+
+        <TextView
+            android:id="@+id/order_chip"
+            style="@style/Text.Mono.Chip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/canvas"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="10dp"
+        android:layout_weight="1">
+
+        <com.wx.beziermaker.BezierView
+            android:id="@+id/bezier"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/status_text"
+        style="@style/Text.Note"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:paddingStart="4dp"
+        android:paddingEnd="4dp"
+        android:text="@string/pg_hint" />
+
+    <!-- 参数 -->
+    <LinearLayout
+        style="@style/Card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:paddingStart="16dp"
+        android:paddingTop="14dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="14dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/Text.Label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/order" />
+
+            <TextView
+                style="@style/Text.Mono.Api"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:text="setOrder" />
+        </LinearLayout>
+
+        <!-- 1 到 7 阶的分段按钮由 PlaygroundActivity 动态添加 -->
+        <LinearLayout
+            android:id="@+id/order_segment"
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_segment"
+            android:orientation="horizontal"
+            android:padding="4dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/Text.Label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/pg_rate" />
+
+            <TextView
+                style="@style/Text.Mono.Api"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:layout_weight="1"
+                android:text="setRate" />
+
+            <TextView
+                android:id="@+id/rate_value"
+                style="@style/Text.Mono"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/accent_ink"
+                android:textSize="13sp" />
+        </LinearLayout>
+
+        <SeekBar
+            android:id="@+id/rate_seek"
+            android:layout_width="match_parent"
+            android:layout_height="36dp"
+            android:contentDescription="@string/pg_rate" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:layout_marginTop="6dp"
+            android:orientation="horizontal">
+
+            <FrameLayout
+                android:id="@+id/toggle_tangent"
+                style="@style/ToggleChip">
+
+                <TextView
+                    android:id="@+id/toggle_tangent_label"
+                    style="@style/ToggleChip.Label"
+                    android:text="@string/tangent" />
+            </FrameLayout>
+
+            <Space
+                android:layout_width="8dp"
+                android:layout_height="0dp" />
+
+            <FrameLayout
+                android:id="@+id/toggle_loop"
+                style="@style/ToggleChip">
+
+                <TextView
+                    android:id="@+id/toggle_loop_label"
+                    style="@style/ToggleChip.Label"
+                    android:text="@string/loop" />
+            </FrameLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- 操作：四个等宽按钮，图标和文字一起居中，图标在 PlaygroundActivity.initButtons 里设置 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:layout_marginTop="12dp"
+        android:orientation="horizontal">
+
+        <FrameLayout
+            android:id="@+id/del_button"
+            style="@style/ActionButton">
+
+            <TextView
+                android:id="@+id/del_label"
+                style="@style/ActionButton.Label"
+                android:text="@string/pg_del" />
+        </FrameLayout>
+
+        <Space
+            android:layout_width="8dp"
+            android:layout_height="0dp" />
+
+        <FrameLayout
+            android:id="@+id/add_button"
+            style="@style/ActionButton">
+
+            <TextView
+                android:id="@+id/add_label"
+                style="@style/ActionButton.Label"
+                android:text="@string/pg_add" />
+        </FrameLayout>
+
+        <Space
+            android:layout_width="8dp"
+            android:layout_height="0dp" />
+
+        <FrameLayout
+            android:id="@+id/stop_button"
+            style="@style/ActionButton">
+
+            <TextView
+                android:id="@+id/stop_label"
+                style="@style/ActionButton.Label"
+                android:text="@string/pg_stop" />
+        </FrameLayout>
+
+        <Space
+            android:layout_width="8dp"
+            android:layout_height="0dp" />
+
+        <FrameLayout
+            android:id="@+id/play_button"
+            style="@style/ActionButton.Primary">
+
+            <TextView
+                android:id="@+id/play_label"
+                style="@style/ActionButton.Label.Primary"
+                android:text="@string/pg_play" />
+        </FrameLayout>
+    </LinearLayout>
+</LinearLayout>

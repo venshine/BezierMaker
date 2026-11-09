@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 二级页面顶栏：返回、标题、API 标签、深浅色切换 -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="48dp"
+    android:layout_marginStart="-10dp"
+    android:layout_marginEnd="-10dp"
+    android:gravity="center_vertical"
+    android:orientation="horizontal">
+
+    <ImageButton
+        android:id="@+id/toolbar_back"
+        style="@style/IconButton"
+        android:contentDescription="@string/back"
+        android:padding="11dp"
+        android:src="@drawable/ic_back" />
+
+    <TextView
+        android:id="@+id/toolbar_title"
+        style="@style/Text.Title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_weight="1" />
+
+    <TextView
+        android:id="@+id/toolbar_chip"
+        style="@style/Text.Mono.Chip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone" />
+
+    <ImageButton
+        android:id="@+id/theme_toggle"
+        style="@style/IconButton"
+        android:layout_marginStart="4dp"
+        android:contentDescription="@string/theme_to_dark"
+        android:src="@drawable/ic_moon" />
+</LinearLayout>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 画布外框：纸面底色 + 描边，网格由 GridPaperDrawable 叠加 -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <corners android:radius="16dp" />
+    <solid android:color="@color/canvas" />
+    <stroke
+        android:width="1dp"
+        android:color="@color/canvas_border" />
+</shape>
