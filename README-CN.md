@@ -4,13 +4,13 @@
 
 [![JitPack](https://jitpack.io/v/venshine/BezierMaker.svg)](https://jitpack.io/#venshine/BezierMaker)  [![CI](https://github.com/venshine/BezierMaker/actions/workflows/ci.yml/badge.svg)](https://github.com/venshine/BezierMaker/actions/workflows/ci.yml)    [![API](https://img.shields.io/badge/API-14%2B-brightgreen.svg?style=flat)](https://developer.android.com/guide/topics/manifest/uses-sdk-element#ApiLevels)  
 
-通过de Casteljau算法绘制贝塞尔曲线，并计算它的切线，实现1-7阶贝塞尔曲线的形成动画。
+通过 de Casteljau 算法绘制贝塞尔曲线，并计算它的切线，实现 1 到 7 阶贝塞尔曲线的形成动画。
 德卡斯特里奥算法可以计算出 Bezier 曲线上的一个点，进而绘制出 Bezier 曲线。算法原理详见 wiki：[De Casteljau 算法](https://github.com/venshine/BezierMaker/wiki/De-Casteljau-%E7%AE%97%E6%B3%95)。  
 
 Features
 --
 * 支持增加和删除控制点
-* 支持1阶到7阶贝塞尔曲线，限于屏幕大小，理论上可以支持N阶贝塞尔曲线
+* 支持 1 阶到 7 阶贝塞尔曲线，限于屏幕大小，理论上可以支持 N 阶贝塞尔曲线
 * 支持自由移动控制点
 * 支持显示贝塞尔曲线形成过程的切线
 * 支持循环显示贝塞尔曲线的形成动画
@@ -155,7 +155,7 @@ public class MainActivity extends Activity {
 
 About
 --
-* [Android 绘制N阶Bezier曲线](http://blog.csdn.net/venshine/article/details/51758841)
+* [Android 绘制 N 阶 Bezier 曲线](http://blog.csdn.net/venshine/article/details/51758841)
 * Email：venshine.cn@gmail.com
 
 Credits
