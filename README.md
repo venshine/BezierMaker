@@ -5,7 +5,7 @@ English | [简体中文](README-CN.md)
 [![JitPack](https://jitpack.io/v/venshine/BezierMaker.svg)](https://jitpack.io/#venshine/BezierMaker)  [![CI](https://github.com/venshine/BezierMaker/actions/workflows/ci.yml/badge.svg)](https://github.com/venshine/BezierMaker/actions/workflows/ci.yml)    [![API](https://img.shields.io/badge/API-14%2B-brightgreen.svg?style=flat)](https://developer.android.com/guide/topics/manifest/uses-sdk-element#ApiLevels)  
 
 Draws Bézier curves with the de Casteljau algorithm, computes their tangents, and animates how Bézier curves of order 1 to 7 are formed.
-The de Casteljau algorithm computes a point on a Bézier curve, from which the whole curve can be drawn. To learn more about it, see my Chinese translation [De Casteljau's Algorithm: Finding a Point on a Bézier Curve](http://blog.csdn.net/venshine/article/details/51750906).  
+The de Casteljau algorithm computes a point on a Bézier curve, from which the whole curve can be drawn. To learn how it works, see [De Casteljau's Algorithm](https://github.com/venshine/BezierMaker/wiki/De-Casteljau-Algorithm) in the wiki.  
 
 [**Download the sample APK**](https://github.com/venshine/BezierMaker/releases/download/3.0.0/BezierMaker-sample-3.0.0.apk)
 

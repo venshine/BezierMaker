@@ -5,7 +5,7 @@
 [![JitPack](https://jitpack.io/v/venshine/BezierMaker.svg)](https://jitpack.io/#venshine/BezierMaker)  [![CI](https://github.com/venshine/BezierMaker/actions/workflows/ci.yml/badge.svg)](https://github.com/venshine/BezierMaker/actions/workflows/ci.yml)    [![API](https://img.shields.io/badge/API-14%2B-brightgreen.svg?style=flat)](https://developer.android.com/guide/topics/manifest/uses-sdk-element#ApiLevels)  
 
 通过de Casteljau算法绘制贝塞尔曲线，并计算它的切线，实现1-7阶贝塞尔曲线的形成动画。
-德卡斯特里奥算法可以计算出Bezier曲线上的一个点，进而绘制出Bezier曲线。想深入了解德卡斯特里奥算法的同学可以参考我翻译的一篇文章[《德卡斯特里奥算法——找到Bezier曲线上的一个点》](http://blog.csdn.net/venshine/article/details/51750906)。  
+德卡斯特里奥算法可以计算出 Bezier 曲线上的一个点，进而绘制出 Bezier 曲线。算法原理详见 wiki：[De Casteljau 算法](https://github.com/venshine/BezierMaker/wiki/De-Casteljau-%E7%AE%97%E6%B3%95)。  
 
 [**下载示例 APK**](https://github.com/venshine/BezierMaker/releases/download/3.0.0/BezierMaker-sample-3.0.0.apk)
 
