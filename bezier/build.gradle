@@ -6,8 +6,6 @@ plugins {
 android {
     namespace = 'com.wx.beziermaker'
     compileSdk = 36
-    // 库是纯 Java，关闭内置 Kotlin，避免给使用方附带 kotlin-stdlib 依赖
-    enableKotlin = false
 
     defaultConfig {
         minSdk = 14
