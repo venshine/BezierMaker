@@ -7,8 +7,6 @@
 通过de Casteljau算法绘制贝塞尔曲线，并计算它的切线，实现1-7阶贝塞尔曲线的形成动画。
 德卡斯特里奥算法可以计算出 Bezier 曲线上的一个点，进而绘制出 Bezier 曲线。算法原理详见 wiki：[De Casteljau 算法](https://github.com/venshine/BezierMaker/wiki/De-Casteljau-%E7%AE%97%E6%B3%95)。  
 
-[**下载示例 APK**](https://github.com/venshine/BezierMaker/releases/download/3.0.0/BezierMaker-sample-3.0.0.apk)
-
 Features
 --
 * 支持增加和删除控制点

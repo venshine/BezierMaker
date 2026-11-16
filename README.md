@@ -7,8 +7,6 @@ English | [简体中文](README-CN.md)
 Draws Bézier curves with the de Casteljau algorithm, computes their tangents, and animates how Bézier curves of order 1 to 7 are formed.
 The de Casteljau algorithm computes a point on a Bézier curve, from which the whole curve can be drawn. To learn how it works, see [De Casteljau's Algorithm](https://github.com/venshine/BezierMaker/wiki/De-Casteljau-Algorithm) in the wiki.  
 
-[**Download the sample APK**](https://github.com/venshine/BezierMaker/releases/download/3.0.0/BezierMaker-sample-3.0.0.apk)
-
 Features
 --
 * Add and remove control points
