@@ -67,3 +67,8 @@ gradle-app.setting
 .private/
 .tmp/
 .kotlin/
+
+# AI 本地文档
+AGENTS.md
+CLAUDE.md
+ROADMAP.md
